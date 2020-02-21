@@ -28,13 +28,14 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
 public class SelectFileActivity extends AppCompatActivity {
     Button buttonSelectFile;
     private Context context;
-    private LinkedList<PDItem> mData;
+    private ArrayList<PDItem> mData;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,7 +71,7 @@ public class SelectFileActivity extends AppCompatActivity {
                 Workbook wb = new HSSFWorkbook(file);
                 Sheet sheet = wb.getSheetAt(0);
                 int num = sheet.getLastRowNum();
-                mData = new LinkedList<PDItem>();
+                mData = new ArrayList<PDItem>();
                 for (int index=0;index<num;index++){
                     PDItem pd = new PDItem(sheet.getRow(index).getCell(0).getStringCellValue(),sheet.getRow(index).getCell(1).getStringCellValue());
                     mData.add(pd);
@@ -82,7 +83,7 @@ public class SelectFileActivity extends AppCompatActivity {
                 Intent i = new Intent(SelectFileActivity.this, MainActivity.class );
                 Bundle bundle = new Bundle();
                 bundle.putSerializable("mData", mData);
-                i.putExtra("mData", bundle);
+                i.putExtras(bundle);
                 SelectFileActivity.this.startActivity(i);
             } catch (FileNotFoundException e) {
                 e.printStackTrace();

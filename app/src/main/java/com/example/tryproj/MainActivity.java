@@ -10,12 +10,13 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ListView;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    private LinkedList<PDItem> mData = null;
+    private ArrayList<PDItem> mData = null;
     private Context mContext;
     private PDItemAdapter mAdapter = null;
     private ListView list_pdItem;
@@ -28,13 +29,13 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         mContext = MainActivity.this;
         list_pdItem = (ListView) findViewById(R.id.list_pditem);
-        mData = new LinkedList<PDItem>();
-        for(int i=0;i<25;i++) {
-            PDItem d = new PDItem("电脑"+i, "房间"+i);
-            if(i<3)
-                d.setStatus(true);
-            mData.add(d);
-        }
+        mData = (ArrayList<PDItem>) getIntent().getSerializableExtra("mData");
+//        for(int i=0;i<25;i++) {
+//            PDItem d = new PDItem("电脑"+i, "房间"+i);
+//            if(i<3)
+//                d.setStatus(true);
+//            mData.add(d);
+//        }
         mAdapter = new PDItemAdapter(mData,mContext);
         list_pdItem.setAdapter(mAdapter);
         filterButton = findViewById(R.id.buttonfilter);
