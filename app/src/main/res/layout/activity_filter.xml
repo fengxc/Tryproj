@@ -1,0 +1,40 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+    <TextView
+        android:id="@+id/textLocate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="地点筛选" />
+
+    <CheckBox
+        android:id="@+id/checkBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="1楼" />
+
+    <CheckBox
+        android:id="@+id/checkBox2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="2楼" />
+
+    <CheckBox
+        android:id="@+id/checkBox3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="3楼" />
+
+    <TextView
+        android:id="@+id/textDept"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="部门筛选" />
+    <Button
+        android:id="@+id/buttonapply"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="应用" />
+
+</LinearLayout>
