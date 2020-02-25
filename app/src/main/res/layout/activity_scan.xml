@@ -34,11 +34,6 @@
                  android:orientation="horizontal"
                  android:layout_weight="2">
 
-             <Button
-                    android:id="@+id/buttonquery"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:text="查询" />
              </LinearLayout>
              <LinearLayout
                  android:layout_width="0dp"

@@ -34,7 +34,7 @@ public class ScanActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scan);
         buttonSave = findViewById(R.id.buttonsave);
-        buttonQuery = findViewById(R.id.buttonquery);
+        //buttonQuery = findViewById(R.id.buttonquery);
         editText = findViewById(R.id.fileActEditText);
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {

@@ -38,7 +38,11 @@
             android:orientation="horizontal"
             android:gravity="right"
             >
-
+            <Button
+                android:id="@+id/buttonimport"
+                android:layout_width="100px"
+                android:layout_height="100px"
+                android:text="导入盘点表" />
             <Button
                 android:id="@+id/buttonexport"
                 android:layout_width="150px"
@@ -46,7 +50,7 @@
                 android:text="导出结果" />
             <Button
                 android:id="@+id/buttonfilter"
-                android:layout_width="200px"
+                android:layout_width="100px"
                 android:layout_height="100px"
                 android:text="查询筛选" />
             <Button

@@ -19,6 +19,7 @@ public class ExcelImportor {
     public ExcelImportor() {
         fieldMap .put("序号","sort");
         fieldMap .put("编号","sn");
+        fieldMap .put("所属部门","deptString");
         fieldMap .put("存放地点","locateString");
         fieldMap .put("设备分类","typeString");
         fieldMap .put("规格型号","markString");

@@ -1,8 +1,21 @@
 package com.example.tryproj;
 
-import java.io.Serializable;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
 
+import java.io.Serializable;
+@Entity(tableName = "PDItem")
 public class PDItem implements Serializable {
+    @PrimaryKey(autoGenerate = true)
+    private int id;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     private String sn;
     private String sort;
@@ -42,11 +55,12 @@ public class PDItem implements Serializable {
         this.status = status;
     }
 
-    public PDItem(String sn, String locateString) {
-        this.sn = sn;
-        this.locateString = locateString;
-        this.status = false;
-    }
+
+//    public PDItem(String sn, String locateString) {
+//        this.sn = sn;
+//        this.locateString = locateString;
+//        this.status = false;
+//    }
 
     public String getSn() {
         return sn;

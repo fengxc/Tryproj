@@ -1,6 +1,7 @@
 package com.example.tryproj;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.room.Room;
 
 import android.content.Context;
 import android.content.Intent;
@@ -12,9 +13,13 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.example.tryproj.dao.PDDao;
+import com.example.tryproj.dao.PDItemDataBase;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -26,17 +31,24 @@ public class MainActivity extends AppCompatActivity {
     private ListView list_pdItem;
     private Button addButton;
     private Button filterButton;
-    private Button exportrButton;
-
+    private Button exportButton;
+    private Button importButton;
     private String sep = "\n";
-
+    private PDItemDataBase db;
+    private PDDao dao;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mContext = MainActivity.this;
+        mData = new ArrayList<PDItem>();
         list_pdItem = (ListView) findViewById(R.id.list_pditem);
-        mData = (ArrayList<PDItem>) getIntent().getSerializableExtra("mData");
+        //mData = (ArrayList<PDItem>) getIntent().getSerializableExtra("mData");
+        db= Room.databaseBuilder(getApplicationContext(), PDItemDataBase.class, "pdDatabase").allowMainThreadQueries().build();
+        dao = db.pdDao();
+        //dao.insertPDItems(mData);
+        PDItem[] now = dao.loadPDItems();
+        Collections.addAll(mData,now);
 //        for(int i=0;i<25;i++) {
 //            PDItem d = new PDItem("电脑"+i, "房间"+i);
 //            if(i<3)
@@ -64,8 +76,8 @@ public class MainActivity extends AppCompatActivity {
                 MainActivity.this.startActivityForResult(i,2);
             }
         });
-        exportrButton = findViewById(R.id.buttonexport);
-        exportrButton.setOnClickListener(new OnClickListener() {
+        exportButton = findViewById(R.id.buttonexport);
+        exportButton.setOnClickListener(new OnClickListener() {
 
             @Override
             public void onClick(View v) {
@@ -91,7 +103,14 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-
+        importButton = findViewById(R.id.buttonimport);
+        importButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(MainActivity.this, SelectFileActivity.class );
+                MainActivity.this.startActivityForResult(i,3);
+            }
+        });
     }
 
     @Override
@@ -105,9 +124,25 @@ public class MainActivity extends AppCompatActivity {
                     String[]result = returnData.split(sep);
                     for(String s:result) {
                         for (PDItem p : mData) {
-                            if(p.getSn().equals(s))
+                            if(p.getSn().equals(s)) {
                                 p.setStatus(true);
+                                dao.updatePDItem(p);
+                            }
                         }
+                    }
+                    mAdapter = new PDItemAdapter(mData,mContext);
+                    list_pdItem.setAdapter(mAdapter);
+                }
+                break;
+            case 3:
+                if (resultCode == RESULT_OK) {
+                    ArrayList<PDItem> newData = (ArrayList<PDItem>) data.getSerializableExtra("mData");
+                    PDItem[] oldData = dao.loadPDItems();
+                    dao.deletePDItems(oldData);
+                    mData.clear();
+                    for(PDItem p:newData){
+                        dao.insertPDItem(p);
+                        mData.add(p);
                     }
                     mAdapter = new PDItemAdapter(mData,mContext);
                     list_pdItem.setAdapter(mAdapter);

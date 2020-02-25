@@ -80,7 +80,8 @@ public class SelectFileActivity extends AppCompatActivity {
                 Bundle bundle = new Bundle();
                 bundle.putSerializable("mData", mData);
                 i.putExtras(bundle);
-                SelectFileActivity.this.startActivity(i);
+            setResult(RESULT_OK,i); //  向上一个活动返回数据
+            finish();
 
 
         }
