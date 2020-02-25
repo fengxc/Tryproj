@@ -1,10 +1,10 @@
-package com.example.tryproj.dao;
+package com.nfschina.pdScan.dao;
 
 
 import androidx.room.Database;
 import androidx.room.RoomDatabase;
 
-import com.example.tryproj.PDItem;
+import com.nfschina.pdScan.PDItem;
 
 @Database(entities = {PDItem.class}, version = 1)
 public abstract class PDItemDataBase extends RoomDatabase {

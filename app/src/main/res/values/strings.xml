@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Tryproj</string>
+    <string name="app_name">盘点系统</string>
     <string name="title_activity_filter">Filter</string>
 
     <!-- Preference Titles -->

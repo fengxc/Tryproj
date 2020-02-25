@@ -1,4 +1,4 @@
-package com.example.tryproj;
+package com.nfschina.pdScan;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;

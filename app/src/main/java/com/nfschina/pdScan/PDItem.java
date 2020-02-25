@@ -1,4 +1,4 @@
-package com.example.tryproj;
+package com.nfschina.pdScan;
 
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;

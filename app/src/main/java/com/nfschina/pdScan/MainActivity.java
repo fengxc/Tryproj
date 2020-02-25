@@ -1,4 +1,4 @@
-package com.example.tryproj;
+package com.nfschina.pdScan;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.room.Room;
@@ -13,15 +13,13 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.example.tryproj.dao.PDDao;
-import com.example.tryproj.dao.PDItemDataBase;
+import com.nfschina.pdScan.dao.PDDao;
+import com.nfschina.pdScan.dao.PDItemDataBase;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -124,7 +122,7 @@ public class MainActivity extends AppCompatActivity {
                     String[]result = returnData.split(sep);
                     for(String s:result) {
                         for (PDItem p : mData) {
-                            if(p.getSn().equals(s)) {
+                            if(s.indexOf(p.getSn())>0) {
                                 p.setStatus(true);
                                 dao.updatePDItem(p);
                             }

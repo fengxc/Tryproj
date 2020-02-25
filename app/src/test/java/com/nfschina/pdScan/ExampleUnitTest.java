@@ -1,4 +1,4 @@
-package com.example.tryproj;
+package com.nfschina.pdScan;
 
 import org.junit.Test;
 

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.tryproj">
+    package="com.nfschina.pdScan">
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -12,16 +12,16 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".SelectFileActivity">
+        <activity android:name="com.nfschina.pdScan.SelectFileActivity">
 
         </activity>
         <activity
-            android:name=".FilterActivity"
+            android:name="com.nfschina.pdScan.FilterActivity"
             android:label="@string/title_activity_filter">
 
         </activity>
-        <activity android:name=".ScanActivity" />
-        <activity android:name=".MainActivity">
+        <activity android:name="com.nfschina.pdScan.ScanActivity" />
+        <activity android:name="com.nfschina.pdScan.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

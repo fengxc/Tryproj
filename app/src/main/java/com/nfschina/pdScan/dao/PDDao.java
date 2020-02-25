@@ -1,4 +1,4 @@
-package com.example.tryproj.dao;
+package com.nfschina.pdScan.dao;
 
 import androidx.room.Dao;
 import androidx.room.Delete;
@@ -7,9 +7,7 @@ import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Update;
 
-import com.example.tryproj.PDItem;
-
-import java.util.List;
+import com.nfschina.pdScan.PDItem;
 
 @Dao
 public interface PDDao {
