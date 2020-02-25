@@ -27,6 +27,9 @@ public class MainActivity extends AppCompatActivity {
     private Button addButton;
     private Button filterButton;
     private Button exportrButton;
+
+    private String sep = "\n";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(MainActivity.this, ScanActivity.class );
-                MainActivity.this.startActivity(i);
+                MainActivity.this.startActivityForResult(i,1);
             }
         });
 
@@ -58,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(MainActivity.this, FilterActivity.class );
-                MainActivity.this.startActivity(i);
+                MainActivity.this.startActivityForResult(i,2);
             }
         });
         exportrButton = findViewById(R.id.buttonexport);
@@ -69,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
 
                 String filecontentText ="";
                 for(int index=0;index<mData.size();index++){
-                    filecontentText+=mData.get(index).getItemName()+","+mData.get(index).getLocateString()+","+mData.get(index).isStatus()+"\r\n";
+                    filecontentText+=mData.get(index).getSn()+","+mData.get(index).getLocateString()+","+mData.get(index).isStatus()+"\r\n";
                 }
                 String filename = "Qone/"+System.currentTimeMillis()+".txt";
                 try {
@@ -91,6 +94,28 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            case 1: // 确定数据来源
+                if (resultCode == RESULT_OK) {
+                    String returnData = data.getStringExtra("scanResult");
+                    Toast.makeText(getApplicationContext(), returnData, Toast.LENGTH_SHORT).show();
+                    String[]result = returnData.split(sep);
+                    for(String s:result) {
+                        for (PDItem p : mData) {
+                            if(p.getSn().equals(s))
+                                p.setStatus(true);
+                        }
+                    }
+                    mAdapter = new PDItemAdapter(mData,mContext);
+                    list_pdItem.setAdapter(mAdapter);
+                }
+                break;
+        }
+    }
+
     public void saveToSDCard(String filename, String content)throws Exception {
         /*
          * 保存文件到sd卡，sd卡用于保存大文件（视频，音乐，文档等）
@@ -98,6 +123,11 @@ public class MainActivity extends AppCompatActivity {
          * android版本不同，sd卡的路径也不相同，所以这里不能写绝对路径
          * */
         File file = new File(Environment.getExternalStorageDirectory(), filename);
+//        if (file==null){
+//            String sdpath = Environment.getExternalStorageDirectory()
+//                    .getAbsolutePath();
+//            file = new File(File.separator + "mnt" + File.separator + "sdcard" + sdpath + File.separator, filename);
+//        }
         FileOutputStream outStream = new FileOutputStream(file);
 
 

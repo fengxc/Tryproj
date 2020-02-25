@@ -42,11 +42,12 @@ public class PDItemAdapter extends BaseAdapter {
             convertView = LayoutInflater.from(mContext).inflate(R.layout.list_pditem, parent,false);
         }
 
-        TextView txt_pdName = (TextView) convertView.findViewById(R.id.itemName);
-        TextView txt_pdLocate = (TextView) convertView.findViewById(R.id.locateString);
-        txt_pdName.setText(itemList.get(position).getItemName());
-        txt_pdLocate.setText(itemList.get(position).getLocateString());
-
+        TextView txt_pdSn = (TextView) convertView.findViewById(R.id.itemSn);
+        TextView txt_pdMark = (TextView) convertView.findViewById(R.id.itemMarkString);
+        TextView txt_pdPrincipalString = (TextView) convertView.findViewById(R.id.itemPrincipalString);
+        txt_pdSn.setText(itemList.get(position).getSn());
+        txt_pdMark.setText(itemList.get(position).getMarkString());
+        txt_pdPrincipalString.setText(itemList.get(position).getPrincipalString());
         return convertView;
     }
 }

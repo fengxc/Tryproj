@@ -7,17 +7,31 @@
 
 
     <TextView
-        android:id="@+id/itemName"
+        android:id="@+id/itemSn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingLeft="8dp"
+        android:textSize="17dp"
         android:textColor="#E7E7E7" />
-
-    <TextView
-        android:id="@+id/locateString"
-        android:layout_width="wrap_content"
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingLeft="8px"
-        android:textColor="#B4B4B9"/>
+        android:orientation="horizontal">
+        <TextView
+            android:id="@+id/itemMarkString"
+            android:layout_width="400px"
+            android:layout_height="wrap_content"
+            android:paddingLeft="8px"
+            android:textSize="15dp"
+            android:textColor="#B4B4B9"/>
+        <TextView
+            android:id="@+id/itemPrincipalString"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="8px"
+            android:textSize="15dp"
+            android:textColor="#B4B4B9"/>
+    </LinearLayout>
+
 
 </LinearLayout>

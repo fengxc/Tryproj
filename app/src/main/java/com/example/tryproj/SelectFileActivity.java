@@ -65,35 +65,29 @@ public class SelectFileActivity extends AppCompatActivity {
             Uri uri = data.getData();//得到uri，后面就是将uri转化成file的过程。
             String img_path = getFilePathForN(uri, context);
             File cfile = new File(img_path);
-            FileInputStream file = null;
+
+                ExcelImportor importor = new ExcelImportor();
             try {
-                file = new FileInputStream(cfile);
-                Workbook wb = new HSSFWorkbook(file);
-                Sheet sheet = wb.getSheetAt(0);
-                int num = sheet.getLastRowNum();
-                mData = new ArrayList<PDItem>();
-                for (int index=0;index<num;index++){
-                    PDItem pd = new PDItem(sheet.getRow(index).getCell(0).getStringCellValue(),sheet.getRow(index).getCell(1).getStringCellValue());
-                    mData.add(pd);
-                }
+                mData = importor.inportFromExcel(cfile);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
 
 
-                Toast.makeText(SelectFileActivity.this, "数据量"+mData.size()+"...", Toast.LENGTH_SHORT).show();
+            Toast.makeText(SelectFileActivity.this, "数据量"+mData.size()+"...", Toast.LENGTH_SHORT).show();
 
                 Intent i = new Intent(SelectFileActivity.this, MainActivity.class );
                 Bundle bundle = new Bundle();
                 bundle.putSerializable("mData", mData);
                 i.putExtras(bundle);
                 SelectFileActivity.this.startActivity(i);
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }catch (IOException e) {
-                e.printStackTrace();
-            }
+
 
         }
 
     }
+
+
 
     private static String getFilePathForN(Uri uri, Context context) {
         Uri returnUri = uri;
