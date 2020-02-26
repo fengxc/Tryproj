@@ -2,39 +2,174 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
-    <TextView
-        android:id="@+id/textLocate"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="地点筛选" />
 
-    <CheckBox
-        android:id="@+id/checkBox"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="1楼" />
+        android:layout_weight="1"
+        android:orientation="horizontal">
 
-    <CheckBox
-        android:id="@+id/checkBox2"
+        <TextView
+            android:id="@+id/viewsn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="资产编号" />
+
+        <EditText
+            android:id="@+id/fieldsn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:inputType="text" />
+    </LinearLayout>
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="2楼" />
+        android:layout_weight="1"
+        android:orientation="horizontal">
 
-    <CheckBox
-        android:id="@+id/checkBox3"
+        <TextView
+            android:id="@+id/viewtype"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="设备分类" />
+
+        <EditText
+            android:id="@+id/fieldtype"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ems="10"
+            android:inputType="text" />
+
+    </LinearLayout>
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="3楼" />
+        android:layout_weight="1"
+        android:orientation="horizontal">
 
-    <TextView
-        android:id="@+id/textDept"
-        android:layout_width="wrap_content"
+        <TextView
+            android:id="@+id/viewmark"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="规格型号" />
+
+        <EditText
+            android:id="@+id/fieldmark"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ems="10"
+            android:inputType="text" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="部门筛选" />
-    <Button
-        android:id="@+id/buttonapply"
-        android:layout_width="wrap_content"
+        android:layout_weight="1"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/viewuser"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="使用人" />
+
+        <EditText
+            android:id="@+id/fielduser"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ems="10"
+            android:inputType="textPersonName" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="应用" />
+        android:layout_weight="1"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/viewlocate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="存放地点" />
+
+        <EditText
+            android:id="@+id/fieldlocate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ems="10"
+            android:inputType="text" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="2"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/viewpurchaseTime"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="购置时间" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/datePickerStart"
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                android:editable="false" />
+
+            <TextView
+                android:id="@+id/viewto"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="5px"
+                android:text="至" />
+
+            <EditText
+                android:id="@+id/datePickerEnd"
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                android:editable="false" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/buttonclear"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="清空" />
+
+        <Button
+            android:id="@+id/buttonapplysearch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="确定" />
+    </LinearLayout>
 
 </LinearLayout>

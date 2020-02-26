@@ -37,9 +37,9 @@ public class ScanActivity extends AppCompatActivity {
         //buttonQuery = findViewById(R.id.buttonquery);
         editText = findViewById(R.id.fileActEditText);
         ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.setDisplayHomeAsUpEnabled(true);
-        }
+        //if (actionBar != null) {
+            //actionBar.setDisplayHomeAsUpEnabled(true);
+        //}
         editText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -60,8 +60,7 @@ public class ScanActivity extends AppCompatActivity {
 
             @Override
             public void onClick(View v) {
-                String text ="test";
-                text = editText.getText().toString();
+                String text = editText.getText().toString();
                 Intent intent = new Intent(); //  该Intent仅用于传递数据，没有指定任何"意图"
                 intent.putExtra("scanResult",text); // 把要传递的数据放到Intent中
                 setResult(RESULT_OK,intent); //  向上一个活动返回数据
@@ -88,8 +87,7 @@ public class ScanActivity extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         Intent intent = new Intent(); //  该Intent仅用于传递数据，没有指定任何"意图"
-                        String text ="test";
-                        text = editText.getText().toString();
+                        String text = editText.getText().toString();
                         intent.putExtra("scanResult",text); // 把要传递的数据放到Intent中
                         setResult(RESULT_OK,intent); //  向上一个活动返回数据
                         finish();  //  销毁当前活动

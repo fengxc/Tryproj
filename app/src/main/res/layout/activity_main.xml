@@ -7,58 +7,26 @@
     tools:context=".MainActivity">
 
 
-    <LinearLayout
+    <ListView
+        android:id="@+id/list_pditem"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="match_parent">
 
-<!--
+    </ListView>
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hello World!"
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/scanButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_margin="16dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:src="@android:drawable/ic_menu_add" />
+    </FrameLayout>
 
--->
-
-        <ListView
-            android:id="@+id/list_pditem"
-            android:layout_width="match_parent"
-            android:layout_height="570px" >
-
-        </ListView>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal"
-            android:gravity="right"
-            >
-            <Button
-                android:id="@+id/buttonimport"
-                android:layout_width="100px"
-                android:layout_height="100px"
-                android:text="导入盘点表" />
-            <Button
-                android:id="@+id/buttonexport"
-                android:layout_width="150px"
-                android:layout_height="100px"
-                android:text="导出结果" />
-            <Button
-                android:id="@+id/buttonfilter"
-                android:layout_width="100px"
-                android:layout_height="100px"
-                android:text="查询筛选" />
-            <Button
-                android:id="@+id/buttonscan"
-                android:layout_width="100px"
-                android:layout_height="100px"
-                android:text="扫描" />
-
-        </LinearLayout>
-    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

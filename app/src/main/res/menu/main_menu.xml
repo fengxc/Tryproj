@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/searchMenu"
+        android:icon="@android:drawable/ic_menu_search"
+        android:title="查询"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/pdInfo"
+        android:icon="@android:drawable/ic_dialog_info"
+        android:title="盘点信息" />
+    <item
+        android:id="@+id/importExcel"
+        android:title="导入盘点" />
+    <item
+        android:id="@+id/exportResult"
+        android:title="导出盘点数据" />
+    <item
+        android:id="@+id/exportConflictLog"
+        android:title="导出盘点异常日志" />
+</menu>
