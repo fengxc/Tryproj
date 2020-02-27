@@ -4,6 +4,8 @@ import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
 import java.io.Serializable;
+import java.sql.Date;
+
 @Entity(tableName = "PDItem")
 public class PDItem implements Serializable {
     @PrimaryKey(autoGenerate = true)
@@ -29,14 +31,14 @@ public class PDItem implements Serializable {
     private String priceString;//单价
     private String userString;//使用人
     private String principalString;//负责人
-    private String purchaseTimeString;//购置时间
+    private Date purchaseTime;//购置时间
     private String securityString;//
     private String securityLevelString;//
     private String eqStateString;//设备状态
-    private String scrappedTimeString;//报废日期
+    private Date scrappedTime;//报废日期
     private String docSnString;//凭证号
     private String memoString;//备注
-    private String inTimeString;//入库时间
+    private Date inTime;//入库时间
     private String scrappedWayString;//报废去向
 
     private boolean status;
@@ -150,13 +152,6 @@ public class PDItem implements Serializable {
         this.principalString = principalString;
     }
 
-    public String getPurchaseTimeString() {
-        return purchaseTimeString;
-    }
-
-    public void setPurchaseTimeString(String purchaseTimeString) {
-        this.purchaseTimeString = purchaseTimeString;
-    }
 
     public String getSecurityString() {
         return securityString;
@@ -182,13 +177,6 @@ public class PDItem implements Serializable {
         this.eqStateString = eqStateString;
     }
 
-    public String getScrappedTimeString() {
-        return scrappedTimeString;
-    }
-
-    public void setScrappedTimeString(String scrappedTimeString) {
-        this.scrappedTimeString = scrappedTimeString;
-    }
 
     public String getDocSnString() {
         return docSnString;
@@ -215,14 +203,6 @@ public class PDItem implements Serializable {
         this.sort = sort;
     }
 
-    public String getInTimeString() {
-        return inTimeString;
-    }
-
-    public void setInTimeString(String inTimeString) {
-        this.inTimeString = inTimeString;
-    }
-
     public String getScrappedWayString() {
         return scrappedWayString;
     }
@@ -237,5 +217,29 @@ public class PDItem implements Serializable {
 
     public void setDeptString(String deptString) {
         this.deptString = deptString;
+    }
+
+    public Date getPurchaseTime() {
+        return purchaseTime;
+    }
+
+    public void setPurchaseTime(Date purchaseTime) {
+        this.purchaseTime = purchaseTime;
+    }
+
+    public Date getScrappedTime() {
+        return scrappedTime;
+    }
+
+    public void setScrappedTime(Date scrappedTime) {
+        this.scrappedTime = scrappedTime;
+    }
+
+    public Date getInTime() {
+        return inTime;
+    }
+
+    public void setInTime(Date inTime) {
+        this.inTime = inTime;
     }
 }

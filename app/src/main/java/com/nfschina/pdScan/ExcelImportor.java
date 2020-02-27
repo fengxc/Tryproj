@@ -11,10 +11,12 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.LinkedHashMap;
 
 public class ExcelImportor {
     LinkedHashMap<String, String> fieldMap = new LinkedHashMap<>();
+    LinkedHashMap<String, String> dateFieldMap = new LinkedHashMap<>();
 
     public ExcelImportor() {
         fieldMap .put("序号","sort");
@@ -29,15 +31,16 @@ public class ExcelImportor {
         fieldMap .put("单价（元）","priceString");
         fieldMap .put("使用人","userString");
         fieldMap .put("责任人","principalString");
-        fieldMap .put("购置时间","purchaseTimeString");
         fieldMap .put("涉密情况","securityString");
         fieldMap .put("密级","securityLevelString");
         fieldMap .put("设备状态","eqStateString");
-        fieldMap .put("报废日期","scrappedTimeString");
         fieldMap .put("凭证号","docSnString");
         fieldMap .put("备注","memoString");
-        fieldMap .put("入库时间","inTimeString");
         fieldMap .put("报废去向","scrappedWayString");
+        dateFieldMap .put("购置时间","purchaseTimeString");
+        dateFieldMap .put("报废日期","scrappedTimeString");
+        dateFieldMap .put("入库时间","inTimeString");
+
     }
 
     public ArrayList<PDItem> inportFromExcel(File cfile) throws IOException {
@@ -55,6 +58,7 @@ public class ExcelImportor {
             for(int cindex =0;cindex<row.getLastCellNum();cindex++){
                 String columnName = rowName.getCell(cindex).getStringCellValue();
                 String fieldName = fieldMap.get(columnName);
+                String dateFieldName = dateFieldMap.get(columnName);
                 if(fieldName!=null){
                     String methodStr = "set"+fieldName.toUpperCase().substring(0, 1)+fieldName.substring(1);
 
@@ -64,6 +68,26 @@ public class ExcelImportor {
                             try {
                                 Method method1 = pd.getClass().getMethod(methodStr, new Class[] { String.class });
                                 method1.invoke(pd,arg);
+                            } catch (NoSuchMethodException e) {
+                                e.printStackTrace();
+                            } catch (IllegalAccessException e) {
+                                e.printStackTrace();
+                            } catch (InvocationTargetException e) {
+                                e.printStackTrace();
+                            }
+                        }else{
+
+                        }
+                    }
+                }else if(dateFieldName!=null){
+                    String methodStr = "set"+dateFieldName.toUpperCase().substring(0, 1)+dateFieldName.substring(1);
+
+                    if (row.getCell(cindex)!=null){
+                        if(row.getCell(cindex).toString().length()>0){
+                            Date arg = row.getCell(cindex).getDateCellValue();
+                            try {
+                                Method method1 = pd.getClass().getMethod(methodStr, new Class[] { java.sql.Date.class });
+                                method1.invoke(pd,new java.sql.Date(arg.getTime()));
                             } catch (NoSuchMethodException e) {
                                 e.printStackTrace();
                             } catch (IllegalAccessException e) {

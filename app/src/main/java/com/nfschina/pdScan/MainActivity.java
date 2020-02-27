@@ -18,6 +18,7 @@ import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.nfschina.pdScan.dao.PDDao;
+import com.nfschina.pdScan.dao.PDDto;
 import com.nfschina.pdScan.dao.PDItemDataBase;
 
 import java.io.File;
@@ -38,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
     private String sep = "\n";
     private PDItemDataBase db;
     private PDDao dao;
+    private PDDto dto;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,8 +51,13 @@ public class MainActivity extends AppCompatActivity {
         //mData = (ArrayList<PDItem>) getIntent().getSerializableExtra("mData");
         db = Room.databaseBuilder(getApplicationContext(), PDItemDataBase.class, "pdDatabase").allowMainThreadQueries().build();
         dao = db.pdDao();
+        dto = new PDDto();
         //dao.insertPDItems(mData);
-        PDItem[] now = dao.loadPDItems();
+        PDItem[] now;
+        if (dto.getSn()!=null){
+            now = dao.loadFilteredPDItems(dto.getSn(),dto.getType(),dto.getMark(),dto.getUser(),dto.getLocate());
+        }else
+            now = dao.loadPDItems();
         Collections.addAll(mData, now);
 //        for(int i=0;i<25;i++) {
 //            PDItem d = new PDItem("电脑"+i, "房间"+i);
@@ -118,6 +125,22 @@ public class MainActivity extends AppCompatActivity {
                     list_pdItem.setAdapter(mAdapter);
                 }
                 break;
+            case 2:
+                if (resultCode == RESULT_OK) {
+                    PDDto returnData = (PDDto) data.getSerializableExtra("dto");
+                    dto = returnData;
+                    PDItem[] now;
+                    now = dao.loadFilteredPDItems(dto.getSn(),dto.getType(),dto.getMark(),dto.getUser(),dto.getLocate());
+
+                    mData.clear();
+                    for (PDItem p : now) {
+                        dao.insertPDItem(p);
+                        mData.add(p);
+                    }
+                    mAdapter = new PDItemAdapter(mData, mContext);
+                    list_pdItem.setAdapter(mAdapter);
+                }
+                break;
             case 3:
                 if (resultCode == RESULT_OK) {
                     ArrayList<PDItem> newData = (ArrayList<PDItem>) data.getSerializableExtra("mData");
@@ -131,6 +154,8 @@ public class MainActivity extends AppCompatActivity {
                     mAdapter = new PDItemAdapter(mData, mContext);
                     list_pdItem.setAdapter(mAdapter);
                 }
+                break;
+            default:
                 break;
         }
     }
@@ -204,6 +229,9 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             case R.id.searchMenu:
                 Intent i2 = new Intent(MainActivity.this, FilterActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("dto", dto);
+                i2.putExtras(bundle);
                 MainActivity.this.startActivityForResult(i2, 2);
                 return true;
             default:
