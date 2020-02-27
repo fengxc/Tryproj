@@ -37,8 +37,8 @@ public class ExcelImportor {
         fieldMap .put("凭证号","docSnString");
         fieldMap .put("备注","memoString");
         fieldMap .put("报废去向","scrappedWayString");
-        dateFieldMap .put("购置时间","purchaseTimeString");
-        dateFieldMap .put("报废日期","scrappedTimeString");
+        dateFieldMap .put("购置时间","purchaseTime");
+        dateFieldMap .put("报废日期","scrappedTime");
         dateFieldMap .put("入库时间","inTimeString");
 
     }

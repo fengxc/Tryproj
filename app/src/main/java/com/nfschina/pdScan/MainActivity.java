@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
         //dao.insertPDItems(mData);
         PDItem[] now;
         if (dto.getSn()!=null){
-            now = dao.loadFilteredPDItems(dto.getSn(),dto.getType(),dto.getMark(),dto.getUser(),dto.getLocate());
+            now = dao.loadFilteredPDItems(dto.getSn(),dto.getType(),dto.getMark(),dto.getUser(),dto.getLocate(),dto.getPurchaseTimeStart(),dto.getPurchaseTimeEnd());
         }else
             now = dao.loadPDItems();
         Collections.addAll(mData, now);
@@ -130,11 +130,11 @@ public class MainActivity extends AppCompatActivity {
                     PDDto returnData = (PDDto) data.getSerializableExtra("dto");
                     dto = returnData;
                     PDItem[] now;
-                    now = dao.loadFilteredPDItems(dto.getSn(),dto.getType(),dto.getMark(),dto.getUser(),dto.getLocate());
+                    now = dao.loadFilteredPDItems(dto.getSn(),dto.getType(),dto.getMark(),dto.getUser(),dto.getLocate(),dto.getPurchaseTimeStart(),dto.getPurchaseTimeEnd());
 
                     mData.clear();
                     for (PDItem p : now) {
-                        dao.insertPDItem(p);
+                        //dao.insertPDItem(p);
                         mData.add(p);
                     }
                     mAdapter = new PDItemAdapter(mData, mContext);

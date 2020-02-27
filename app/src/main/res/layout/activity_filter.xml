@@ -23,6 +23,11 @@
             android:layout_weight="1"
             android:ems="10"
             android:inputType="text" />
+        <Button
+            android:id="@+id/snDel"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:background="@android:drawable/ic_delete" />
     </LinearLayout>
 
     <LinearLayout
@@ -45,7 +50,11 @@
             android:layout_weight="1"
             android:ems="10"
             android:inputType="text" />
-
+        <Button
+            android:id="@+id/typeDel"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:background="@android:drawable/ic_delete" />
     </LinearLayout>
 
     <LinearLayout
@@ -68,6 +77,11 @@
             android:layout_weight="1"
             android:ems="10"
             android:inputType="text" />
+        <Button
+            android:id="@+id/markDel"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:background="@android:drawable/ic_delete" />
     </LinearLayout>
 
     <LinearLayout
@@ -90,6 +104,12 @@
             android:layout_weight="1"
             android:ems="10"
             android:inputType="textPersonName" />
+
+        <Button
+            android:id="@+id/userDel"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:background="@android:drawable/ic_delete" />
     </LinearLayout>
 
     <LinearLayout
@@ -112,6 +132,12 @@
             android:layout_weight="1"
             android:ems="10"
             android:inputType="text" />
+
+        <Button
+            android:id="@+id/locateDel"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:background="@android:drawable/ic_delete" />
     </LinearLayout>
 
     <LinearLayout
@@ -133,10 +159,16 @@
 
             <EditText
                 android:id="@+id/datePickerStart"
-                android:layout_width="150dp"
+                android:layout_width="120dp"
                 android:layout_height="wrap_content"
                 android:clickable="true"
                 android:editable="false" />
+
+            <Button
+                android:id="@+id/dateStartDel"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:background="@android:drawable/ic_delete" />
 
             <TextView
                 android:id="@+id/viewto"
@@ -147,10 +179,16 @@
 
             <EditText
                 android:id="@+id/datePickerEnd"
-                android:layout_width="150dp"
+                android:layout_width="120dp"
                 android:layout_height="wrap_content"
                 android:clickable="true"
                 android:editable="false" />
+            <Button
+                android:id="@+id/dateEndDel"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:background="@android:drawable/ic_delete" />
+
         </LinearLayout>
     </LinearLayout>
 

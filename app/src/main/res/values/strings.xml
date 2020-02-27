@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">盘点系统</string>
-    <string name="title_activity_filter">Filter</string>
+    <string name="title_activity_filter">查询条件</string>
 
     <!-- Preference Titles -->
     <string name="messages_header">Messages</string>

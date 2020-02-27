@@ -9,6 +9,8 @@ import androidx.room.Update;
 
 import com.nfschina.pdScan.PDItem;
 
+import java.sql.Date;
+
 @Dao
 public interface PDDao {
 
@@ -40,6 +42,6 @@ public interface PDDao {
     @Delete
     public void deletePDItems(PDItem[] pdItem);
 
-    @Query("SELECT * FROM PDItem WHERE (sn like :sn or (:sn is null)) and (typeString like :type or (:type is null)) and (markString like :mark or (:mark is null)) and (userString like :user or (:user is null)) and (locateString like :locate or (:locate is null)) ")
-    public PDItem[] loadFilteredPDItems(String  sn, String type, String mark, String user, String locate);
+    @Query("SELECT * FROM PDItem WHERE (sn like :sn or (:sn is null)) and (typeString like :type or (:type is null)) and (markString like :mark or (:mark is null)) and (userString like :user or (:user is null)) and (locateString like :locate or (:locate is null)) and (purchaseTime >= :start or (:start is null)) and (purchaseTime < :end or (:end is null))  ")
+    public PDItem[] loadFilteredPDItems(String  sn, String type, String mark, String user, String locate, Date start, Date end);
 }
