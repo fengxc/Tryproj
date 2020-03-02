@@ -16,37 +16,34 @@
         <EditText
             android:id="@+id/fileActEditText"
             android:layout_width="match_parent"
-            android:layout_height="570px"
+            android:layout_height="wrap_content"
             android:ems="20"
             tools:layout_editor_absoluteX="16dp"
             tools:layout_editor_absoluteY="16dp" />
 
-
-
-         <LinearLayout
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal"
-             android:layout_weight="1">
-             <LinearLayout
-                 android:layout_width="0dp"
-                 android:layout_height="fill_parent"
-                 android:orientation="horizontal"
-                 android:layout_weight="2">
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
 
-             </LinearLayout>
-             <LinearLayout
-                 android:layout_width="0dp"
-                 android:layout_height="fill_parent"
-                 android:orientation="horizontal"
-                 android:layout_weight="2">
-                <Button
-                    android:id="@+id/buttonsave"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:text="保存" />
-             </LinearLayout>
+            <TextView
+                android:id="@+id/PDItemInfoView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="8"
+                android:text="PDItemInfoView" />
+
+            <Button
+                android:id="@+id/buttonsave"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|end"
+                android:layout_weight="1"
+                android:text="保存" />
         </LinearLayout>
+
+
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

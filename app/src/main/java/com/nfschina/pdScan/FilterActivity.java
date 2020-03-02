@@ -1,8 +1,12 @@
 package com.nfschina.pdScan;
 
 import android.app.DatePickerDialog;
+import android.app.Service;
+import android.content.ComponentName;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
@@ -23,6 +27,10 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 public class FilterActivity extends AppCompatActivity {
+
+    PDDataSourceService.PDQueryBinder binder;
+    private ServiceConnection conn;
+
     Button startDel;
     Button endDel;
     Button snDel;
@@ -37,13 +45,52 @@ public class FilterActivity extends AppCompatActivity {
     EditText markfield;
     EditText userfield;
     EditText locatefield;
-    private PDDto dto;
+    //private PDDto dto;
     Button clear;
     Button ok;
+
+    DateFormat fmt =new SimpleDateFormat("yyyy/MM/dd");
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_filter);
+        Intent intentService = new Intent();
+        intentService.setAction("com.nfschina.pdScan.PDDataSourceService_Action");
+        intentService.setPackage("com.nfschina.pdScan");
+        conn =  new ServiceConnection() {
+
+            @Override
+            public void onServiceConnected(ComponentName name, IBinder service) {
+                binder = (PDDataSourceService.PDQueryBinder) service;
+                PDDto dto = binder.pullDto();
+                if(dto.getSn()!=null)
+                    snfield.setText(dto.getSn().substring(1,dto.getSn().length()-1));
+                if(dto.getType()!=null)
+                    typefield.setText(dto.getType().substring(1,dto.getType().length()-1));
+                if(dto.getMark()!=null)
+                    markfield.setText(dto.getMark().substring(1,dto.getMark().length()-1));
+                if(dto.getUser()!=null)
+                    userfield.setText(dto.getUser().substring(1,dto.getUser().length()-1));
+                if(dto.getLocate()!=null)
+                    locatefield.setText(dto.getLocate().substring(1,dto.getLocate().length()-1));
+                if(dto.getPurchaseTimeStart()!=null){
+                    dateStart.setText(fmt.format(dto.getPurchaseTimeStart()));
+                }
+                if(dto.getPurchaseTimeEnd()!=null){
+                    Date dend = dto.getPurchaseTimeEnd();
+                    Calendar c = Calendar.getInstance();
+                    c.setTime(new java.util.Date(dend.getTime()));
+                    c.add(Calendar.DATE, -1);
+                    dateEnd.setText(fmt.format(c.getTime().getTime()));
+                }
+            }
+
+            @Override
+            public void onServiceDisconnected(ComponentName name) {
+
+            }
+        };
 //        getSupportFragmentManager()
 //                .beginTransaction()
 //                .replace(R.id.settings, new SettingsFragment())
@@ -52,34 +99,19 @@ public class FilterActivity extends AppCompatActivity {
         //if (actionBar != null) {
             //actionBar.setDisplayHomeAsUpEnabled(true);
         //}
-        PDDto returnData = (PDDto) getIntent().getSerializableExtra("dto");
-        dto = returnData;
-
+        bindService(intentService,conn, Service.BIND_AUTO_CREATE);
         snfield = findViewById(R.id.fieldsn);
-        if(dto.getSn()!=null)
-            snfield.setText(dto.getSn().substring(1,dto.getSn().length()-1));
         typefield = findViewById(R.id.fieldtype);
-        if(dto.getType()!=null)
-            typefield.setText(dto.getType().substring(1,dto.getType().length()-1));
         markfield = findViewById(R.id.fieldmark);
-        if(dto.getMark()!=null)
-            markfield.setText(dto.getMark().substring(1,dto.getMark().length()-1));
         userfield = findViewById(R.id.fielduser);
-        if(dto.getUser()!=null)
-            userfield.setText(dto.getUser().substring(1,dto.getUser().length()-1));
         locatefield = findViewById(R.id.fieldlocate);
-        if(dto.getLocate()!=null)
-            locatefield.setText(dto.getLocate().substring(1,dto.getLocate().length()-1));
 
 
         ok = findViewById(R.id.buttonapplysearch);
 
-        DateFormat fmt =new SimpleDateFormat("yyyy/MM/dd");
 
         dateStart = findViewById(R.id.datePickerStart);
-        if(dto.getPurchaseTimeStart()!=null){
-            dateStart.setText(fmt.format(dto.getPurchaseTimeStart()));
-        }
+
         dateStart.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
@@ -96,13 +128,6 @@ public class FilterActivity extends AppCompatActivity {
             }
         });
         dateEnd = findViewById(R.id.datePickerEnd);
-        if(dto.getPurchaseTimeEnd()!=null){
-            Date dend = dto.getPurchaseTimeEnd();
-            Calendar c = Calendar.getInstance();
-            c.setTime(new java.util.Date(dend.getTime()));
-            c.add(Calendar.DATE, -1);
-            dateEnd.setText(fmt.format(c.getTime().getTime()));
-        }
         dateEnd.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
@@ -121,27 +146,32 @@ public class FilterActivity extends AppCompatActivity {
         ok.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                PDDto newDto = new PDDto();
+                PDDto newDto = binder.pullDto();
                 String sn = snfield.getText().toString();
                 if(sn!=null&&sn.length()>0){
                     newDto.setSn("%"+sn+"%");
-                }
+                }else
+                    newDto.setSn(null);
                 String type = typefield.getText().toString();
                 if(type!=null&&type.length()>0){
                     newDto.setType("%"+type+"%");
-                }
+                }else
+                    newDto.setType(null);
                 String mark = markfield.getText().toString();
                 if(mark!=null&&mark.length()>0){
                     newDto.setMark("%"+mark+"%");
-                }
+                }else
+                    newDto.setMark(null);
                 String user = userfield.getText().toString();
                 if(user!=null&&user.length()>0){
                     newDto.setUser("%"+user+"%");
-                }
+                }else
+                    newDto.setUser(null);
                 String locate = locatefield.getText().toString();
                 if(locate!=null&&locate.length()>0){
                     newDto.setLocate("%"+locate+"%");
-                }
+                }else
+                    newDto.setLocate(null);
 
                 String start = dateStart.getText().toString();
                 if(start!=null&&start.length()>0){
@@ -152,7 +182,8 @@ public class FilterActivity extends AppCompatActivity {
                     } catch (ParseException e) {
                         e.printStackTrace();
                     }
-                }
+                }else
+                    newDto.setPurchaseTimeStart(null);
                 String end = dateEnd.getText().toString();
                 if(end!=null&&end.length()>0){
                     DateFormat fmt =new SimpleDateFormat("yyyy/MM/dd");
@@ -165,12 +196,10 @@ public class FilterActivity extends AppCompatActivity {
                     } catch (ParseException e) {
                         e.printStackTrace();
                     }
-                }
-                Intent i = new Intent();
-                Bundle bundle = new Bundle();
-                bundle.putSerializable("dto", newDto);
-                i.putExtras(bundle);
-                setResult(RESULT_OK,i); //  向上一个活动返回数据
+                }else
+                    newDto.setPurchaseTimeEnd(null);
+                binder.refresh();
+                setResult(RESULT_OK); //  向上一个活动返回数据
                 finish();
             }
         });
@@ -258,10 +287,10 @@ public class FilterActivity extends AppCompatActivity {
         }, c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH)).show();
 
     }
-    public static class SettingsFragment extends PreferenceFragmentCompat {
-        @Override
-        public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
-            setPreferencesFromResource(R.xml.root_preferences, rootKey);
-        }
-    }
+//    public static class SettingsFragment extends PreferenceFragmentCompat {
+//        @Override
+//        public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
+//            setPreferencesFromResource(R.xml.root_preferences, rootKey);
+//        }
+//    }
 }

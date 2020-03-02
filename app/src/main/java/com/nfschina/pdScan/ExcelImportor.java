@@ -39,7 +39,7 @@ public class ExcelImportor {
         fieldMap .put("报废去向","scrappedWayString");
         dateFieldMap .put("购置时间","purchaseTime");
         dateFieldMap .put("报废日期","scrappedTime");
-        dateFieldMap .put("入库时间","inTimeString");
+        dateFieldMap .put("入库时间","inTime");
 
     }
 

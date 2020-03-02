@@ -1,22 +1,34 @@
 package com.nfschina.pdScan;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.room.Room;
 
+import android.app.Service;
+import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.IBinder;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.Button;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.navigation.NavigationView;
+import com.google.android.material.tabs.TabLayout;
 import com.nfschina.pdScan.dao.PDDao;
 import com.nfschina.pdScan.dao.PDDto;
 import com.nfschina.pdScan.dao.PDItemDataBase;
@@ -25,48 +37,120 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
-
-    private ArrayList<PDItem> mData = null;
+    DrawerLayout drawerLayout;
+    private List<PDItem> mData = null;
     private Context mContext;
     private PDItemAdapter mAdapter = null;
     private ListView list_pdItem;
     private FloatingActionButton addButton;
-//    private Button filterButton;
-//    private Button exportButton;
-//    private Button importButton;
     private String sep = "\n";
-    private PDItemDataBase db;
-    private PDDao dao;
-    private PDDto dto;
+
+    private int mode = 0;//0全部 1未扫 2已扫
+    private Toolbar toolbar;
+    PDDataSourceService.PDQueryBinder binder;
+    private ServiceConnection conn;
+
+    IntentFilter filter = new IntentFilter("com.nfschina.pdScan.PDDataSourceService_ListUpdate");
+
+    private BroadcastReceiver receiver = new BroadcastReceiver() {
+        public void onReceive(Context context, Intent intent) {
+            updateList();
+        }
+    };
+    private NavigationView navigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mContext = MainActivity.this;
+        drawerLayout = findViewById(R.id.drawerlayout);
+        Intent intentService = new Intent();
+        intentService.setAction("com.nfschina.pdScan.PDDataSourceService_Action");
+        intentService.setPackage("com.nfschina.pdScan");
+        //startService(intentService);
+
+
+        conn =  new ServiceConnection() {
+
+            @Override
+            public void onServiceConnected(ComponentName name, IBinder service) {
+                binder = (PDDataSourceService.PDQueryBinder) service;
+                updateList();
+
+            }
+
+            @Override
+            public void onServiceDisconnected(ComponentName name) {
+
+            }
+        };
+        bindService(intentService,conn, Service.BIND_AUTO_CREATE);
         mData = new ArrayList<PDItem>();
         list_pdItem = findViewById(R.id.list_pditem);
+        toolbar = findViewById(R.id.toolbar);
+        toolbar.setTitle(R.string.alldept);
+        setSupportActionBar(toolbar);
+        toolbar.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                drawerLayout.openDrawer(Gravity.LEFT,true);
+            }
+        });
+        toolbar.setNavigationOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                drawerLayout.openDrawer(Gravity.LEFT,true);
+            }
+        });
+        navigationView = findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                Toast.makeText(getApplicationContext(), item.getOrder()+"", Toast.LENGTH_SHORT).show();
+                toolbar.setTitle(R.string.alldept);
+                binder.changeDept(item.getOrder());
+                updateList();
+                drawerLayout.closeDrawer(Gravity.LEFT);
+                return false;
+            }
+        });
+
+        TabLayout tabs = findViewById(R.id.statusTab);
+        tabs.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                Toast.makeText(getApplicationContext(), tab.getPosition()+"", Toast.LENGTH_SHORT).show();
+                binder.changeStatus(tab.getPosition());
+                updateList();
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
         //mData = (ArrayList<PDItem>) getIntent().getSerializableExtra("mData");
-        db = Room.databaseBuilder(getApplicationContext(), PDItemDataBase.class, "pdDatabase").allowMainThreadQueries().build();
-        dao = db.pdDao();
-        dto = new PDDto();
+
         //dao.insertPDItems(mData);
-        PDItem[] now;
-        if (dto.getSn()!=null){
-            now = dao.loadFilteredPDItems(dto.getSn(),dto.getType(),dto.getMark(),dto.getUser(),dto.getLocate(),dto.getPurchaseTimeStart(),dto.getPurchaseTimeEnd());
-        }else
-            now = dao.loadPDItems();
-        Collections.addAll(mData, now);
+
 //        for(int i=0;i<25;i++) {
 //            PDItem d = new PDItem("电脑"+i, "房间"+i);
 //            if(i<3)
 //                d.setStatus(true);
 //            mData.add(d);
 //        }
-        mAdapter = new PDItemAdapter(mData, mContext);
-        list_pdItem.setAdapter(mAdapter);
+
         //filterButton = findViewById(R.id.buttonfilter);
         addButton = findViewById(R.id.scanButton);
         addButton.setOnClickListener(new OnClickListener() {
@@ -77,6 +161,8 @@ public class MainActivity extends AppCompatActivity {
                 MainActivity.this.startActivityForResult(i, 1);
             }
         });
+
+        registerReceiver(receiver, filter);
 
 //        filterButton.setOnClickListener(new OnClickListener() {
 //
@@ -104,55 +190,51 @@ public class MainActivity extends AppCompatActivity {
 //        });
     }
 
+    private void updateList() {
+        mData = binder.getCurrentResult();
+        mAdapter = new PDItemAdapter(mData, mContext);
+        list_pdItem.setAdapter(mAdapter);
+        Map map = binder.getMap();
+        Iterator entries = map.entrySet().iterator();
+        navigationView.getMenu().clear();
+        while (entries.hasNext()) {
+
+            Map.Entry entry = (Map.Entry) entries.next();
+
+            Integer key = (Integer)entry.getKey();
+
+            String value = (String) entry.getValue();
+
+
+
+            navigationView.getMenu().add(1, key, key, value);
+        }
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
-            case 1: // 确定数据来源
+            case 1: // 确定数据来源 SCAN
                 if (resultCode == RESULT_OK) {
                     String returnData = data.getStringExtra("scanResult");
                     Toast.makeText(getApplicationContext(), returnData, Toast.LENGTH_SHORT).show();
                     String[] result = returnData.split(sep);
                     for (String s : result) {
-                        for (PDItem p : mData) {
-                            if (s.indexOf(p.getSn()) >= 0) {
-                                p.setStatus(true);
-                                dao.updatePDItem(p);
-                            }
-                        }
+                        binder.checkPDItem(s);
                     }
-                    mAdapter = new PDItemAdapter(mData, mContext);
-                    list_pdItem.setAdapter(mAdapter);
                 }
                 break;
-            case 2:
+            case 2://查询
                 if (resultCode == RESULT_OK) {
-                    PDDto returnData = (PDDto) data.getSerializableExtra("dto");
-                    dto = returnData;
-                    PDItem[] now;
-                    now = dao.loadFilteredPDItems(dto.getSn(),dto.getType(),dto.getMark(),dto.getUser(),dto.getLocate(),dto.getPurchaseTimeStart(),dto.getPurchaseTimeEnd());
-
-                    mData.clear();
-                    for (PDItem p : now) {
-                        //dao.insertPDItem(p);
-                        mData.add(p);
-                    }
-                    mAdapter = new PDItemAdapter(mData, mContext);
-                    list_pdItem.setAdapter(mAdapter);
+                    //binder.refresh();
+                    updateList();
                 }
                 break;
-            case 3:
+            case 3://导入
                 if (resultCode == RESULT_OK) {
                     ArrayList<PDItem> newData = (ArrayList<PDItem>) data.getSerializableExtra("mData");
-                    PDItem[] oldData = dao.loadPDItems();
-                    dao.deletePDItems(oldData);
-                    mData.clear();
-                    for (PDItem p : newData) {
-                        dao.insertPDItem(p);
-                        mData.add(p);
-                    }
-                    mAdapter = new PDItemAdapter(mData, mContext);
-                    list_pdItem.setAdapter(mAdapter);
+                    binder.importPDList(newData);
                 }
                 break;
             default:
@@ -229,14 +311,18 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             case R.id.searchMenu:
                 Intent i2 = new Intent(MainActivity.this, FilterActivity.class);
-                Bundle bundle = new Bundle();
-                bundle.putSerializable("dto", dto);
-                i2.putExtras(bundle);
                 MainActivity.this.startActivityForResult(i2, 2);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
 
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unbindService(conn);
+        unregisterReceiver(receiver);
     }
 }

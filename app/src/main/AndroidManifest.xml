@@ -11,17 +11,21 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
-        <activity android:name="com.nfschina.pdScan.SelectFileActivity">
+        android:theme="@style/AppTheme.NoActionBar">
+        <service
+            android:name=".PDDataSourceService">
+            <intent-filter>
+                <action android:name="com.nfschina.pdScan.PDDataSourceService_Action"/>
+                <action android:name="com.nfschina.pdScan.PDDataSourceService_ListUpdate"/>
+            </intent-filter>
+        </service>
 
-        </activity>
+        <activity android:name=".SelectFileActivity" />
         <activity
-            android:name="com.nfschina.pdScan.FilterActivity"
-            android:label="@string/title_activity_filter">
-
-        </activity>
-        <activity android:name="com.nfschina.pdScan.ScanActivity" />
-        <activity android:name="com.nfschina.pdScan.MainActivity">
+            android:name=".FilterActivity"
+            android:label="@string/title_activity_filter" />
+        <activity android:name=".ScanActivity" />
+        <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
