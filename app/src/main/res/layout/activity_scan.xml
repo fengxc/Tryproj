@@ -13,13 +13,28 @@
         android:orientation="vertical">
 
 
-        <EditText
-            android:id="@+id/fileActEditText"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:ems="20"
-            tools:layout_editor_absoluteX="16dp"
-            tools:layout_editor_absoluteY="16dp" />
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/fileActEditText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="5"
+                android:ems="20"
+                tools:layout_editor_absoluteX="16dp"
+                tools:layout_editor_absoluteY="16dp" />
+
+            <Button
+                android:id="@+id/buttonScan"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="扫描"
+                android:visibility="invisible" />
+        </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -30,7 +45,7 @@
             <LinearLayout
                 android:id="@+id/scanLayout"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_weight="8"
                 android:orientation="vertical"></LinearLayout>
 
@@ -40,7 +55,8 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom|end"
                 android:layout_weight="1"
-                android:text="保存" />
+                android:text="保存"
+                android:visibility="invisible" />
         </LinearLayout>
 
 

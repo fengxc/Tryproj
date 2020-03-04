@@ -17,6 +17,7 @@
             <intent-filter>
                 <action android:name="com.nfschina.pdScan.PDDataSourceService_Action"/>
                 <action android:name="com.nfschina.pdScan.PDDataSourceService_ListUpdate"/>
+                <action android:name="com.nfschina.pdScan.PDDataSourceService_PDItemUpdate"/>
             </intent-filter>
         </service>
 

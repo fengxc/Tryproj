@@ -40,6 +40,8 @@ public class PDItem implements Serializable {
     private String memoString;//备注
     private Date inTime;//入库时间
     private String scrappedWayString;//报废去向
+    private String securitySNString;
+    private String HDSNString;
 
     private boolean status;
 
@@ -241,5 +243,21 @@ public class PDItem implements Serializable {
 
     public void setInTime(Date inTime) {
         this.inTime = inTime;
+    }
+
+    public String getSecuritySNString() {
+        return securitySNString;
+    }
+
+    public void setSecuritySNString(String securitySNString) {
+        this.securitySNString = securitySNString;
+    }
+
+    public String getHDSNString() {
+        return HDSNString;
+    }
+
+    public void setHDSNString(String HDSNString) {
+        this.HDSNString = HDSNString;
     }
 }

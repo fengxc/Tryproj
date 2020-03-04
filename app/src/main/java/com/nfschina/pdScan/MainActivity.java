@@ -21,6 +21,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -48,11 +49,22 @@ public class MainActivity extends AppCompatActivity {
     private int mode = 0;//0全部 1未扫 2已扫
     private Toolbar toolbar;
     PDDataSourceService.PDQueryBinder binder;
-    private ServiceConnection conn;
+    private ServiceConnection conn =  new ServiceConnection() {
 
-    IntentFilter filter = new IntentFilter("com.nfschina.pdScan.PDDataSourceService_ListUpdate");
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            binder = (PDDataSourceService.PDQueryBinder) service;
+            updateUIStatus();
 
-    private BroadcastReceiver receiver = new BroadcastReceiver() {
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+
+        }
+    };
+    IntentFilter updateFilter = new IntentFilter("com.nfschina.pdScan.PDDataSourceService_ListUpdate");
+    private BroadcastReceiver updateReceiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
             updateUIStatus();
         }
@@ -72,23 +84,19 @@ public class MainActivity extends AppCompatActivity {
         //startService(intentService);
 
 
-        conn =  new ServiceConnection() {
-
-            @Override
-            public void onServiceConnected(ComponentName name, IBinder service) {
-                binder = (PDDataSourceService.PDQueryBinder) service;
-                updateUIStatus();
-
-            }
-
-            @Override
-            public void onServiceDisconnected(ComponentName name) {
-
-            }
-        };
         bindService(intentService,conn, Service.BIND_AUTO_CREATE);
+        registerReceiver(updateReceiver, updateFilter);
+
+
         mData = new ArrayList<PDItem>();
         list_pdItem = findViewById(R.id.list_pditem);
+        list_pdItem.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            //parent 代表listView View 代表 被点击的列表项 position 代表第几个 id 代表列表编号
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Toast.makeText(MainActivity.this, mData.get(position).getSn(), Toast.LENGTH_LONG).show();
+            }
+        });
         toolbar = findViewById(R.id.toolbar);
         toolbar.setTitle(R.string.alldept);
         setSupportActionBar(toolbar);
@@ -165,7 +173,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        registerReceiver(receiver, filter);
 
 //        filterButton.setOnClickListener(new OnClickListener() {
 //
@@ -195,7 +202,10 @@ public class MainActivity extends AppCompatActivity {
 
     private void updateUIStatus() {
         mData = binder.getCurrentResult();
-        mAdapter = new PDItemAdapter(mData, mContext);
+        if(mAdapter==null)
+            mAdapter = new PDItemAdapter(mData, mContext);
+        else
+            mAdapter.setItemList(mData);
         list_pdItem.setAdapter(mAdapter);
         navigationView.getMenu().clear();
         TextView head = findViewById(R.id.headtitle);
@@ -333,6 +343,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         unbindService(conn);
-        unregisterReceiver(receiver);
+        unregisterReceiver(updateReceiver);
     }
 }

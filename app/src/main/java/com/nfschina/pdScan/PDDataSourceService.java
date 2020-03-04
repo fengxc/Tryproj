@@ -32,6 +32,8 @@ public class PDDataSourceService extends Service {
     private PDItem[] pdData;
     private String excelName;
     private String excelDate;
+    private PDItem[] pdItemSNQueryResult;
+
     private PDQueryBinder cur = new PDQueryBinder();
 
     private SharedHelper helper;
@@ -260,6 +262,17 @@ public class PDDataSourceService extends Service {
         }).start();
     }
 
+
+    public void queryBySN(final String sn) {
+        new Thread(new Runnable() {
+            public void run() {
+                pdItemSNQueryResult = dao.findPDItem(sn);
+                Intent intent = new Intent("com.nfschina.pdScan.PDDataSourceService_PDItemUpdate");
+                sendBroadcast(intent);
+            }
+        }).start();
+    }
+
     @Override
     public void onDestroy() {
         super.onDestroy();
@@ -348,5 +361,14 @@ public class PDDataSourceService extends Service {
             return deptIndex;
         }
 
+        public void queryPdItemBySN(String sn){
+            queryBySN(sn);
+        }
+
+        public PDItem[] getPdItemSNQueryResult() {
+            return pdItemSNQueryResult;
+        }
     }
+
+
 }

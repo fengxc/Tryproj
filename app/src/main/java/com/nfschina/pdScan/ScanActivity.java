@@ -2,11 +2,19 @@ package com.nfschina.pdScan;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 
 import android.app.AlertDialog;
+import android.app.Service;
+import android.content.BroadcastReceiver;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
@@ -15,25 +23,62 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import java.io.File;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class ScanActivity extends AppCompatActivity {
+    private ServiceConnection conn =  new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            binder = (PDDataSourceService.PDQueryBinder) service;
+
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+
+        }
+    };
+    PDDataSourceService.PDQueryBinder binder;
+    IntentFilter updateFilter = new IntentFilter("com.nfschina.pdScan.PDDataSourceService_PDItemUpdate");
+    private BroadcastReceiver updateReceiver = new BroadcastReceiver() {
+        public void onReceive(Context context, Intent intent) {
+            if(pditemInfoFragment!=null) {
+                PDItem[] result = binder.getPdItemSNQueryResult();
+                if (result.length > 0) {
+                    pditemInfoFragment.setCuerrentPDItem(result[0]);
+                    binder.checkPDItem(result[0].getSn());
+                }
+                pditemInfoFragment.updateUI();
+            }
+        }
+    };
+
+
+
+
     private EditText editText;
-    private Button buttonSave;
-    private File file;
+    //private Button buttonSave;
+    //private Button buttonScan;
+
     private List<String> curNums = new ArrayList<String>();
     private String sep = "\r\n";
-
     private boolean hasChanged = false;
-    private Button buttonQuery;
-
+    //private Button buttonQuery;
+    PditemInfoFragment pditemInfoFragment;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scan);
-        buttonSave = findViewById(R.id.buttonsave);
+        Intent intentService = new Intent();
+        intentService.setAction("com.nfschina.pdScan.PDDataSourceService_Action");
+        intentService.setPackage("com.nfschina.pdScan");
+        bindService(intentService,conn, Service.BIND_AUTO_CREATE);
+        registerReceiver(updateReceiver, updateFilter);
+
+        //buttonSave = findViewById(R.id.buttonsave);
         //buttonQuery = findViewById(R.id.buttonquery);
         editText = findViewById(R.id.fileActEditText);
         ActionBar actionBar = getSupportActionBar();
@@ -54,30 +99,64 @@ public class ScanActivity extends AppCompatActivity {
             @Override
             public void afterTextChanged(Editable s) {
                 hasChanged=true;
+                String str = editText.getText().toString();
+                if(str.contains("\n")){
+                    if(pditemInfoFragment==null) {
+                        pditemInfoFragment = new PditemInfoFragment();
+                        getSupportFragmentManager().beginTransaction().add(R.id.scanLayout, pditemInfoFragment).commit();
+                    }
+                    String pre = getString(R.string.scan_Pre);
+                    if(str.length()> pre.length()) {
+                        str=str.substring(pre.length());
+                        str=str.substring(0,str.length()-1);
+                        binder.queryPdItemBySN(str);
+                    }else{
+                        //TODO 扫描格式错误保存信息
+                    }
+
+                    editText.setText("");
+                }
             }
         });
-        buttonSave.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                String text = editText.getText().toString();
-                Intent intent = new Intent(); //  该Intent仅用于传递数据，没有指定任何"意图"
-                intent.putExtra("scanResult",text); // 把要传递的数据放到Intent中
-                setResult(RESULT_OK,intent); //  向上一个活动返回数据
-                finish();  //  销毁当前活动
-            }
-        });
+//        buttonSave.setOnClickListener(new View.OnClickListener() {
+//
+//            @Override
+//            public void onClick(View v) {
+//                String text = editText.getText().toString();
+//                Intent intent = new Intent(); //  该Intent仅用于传递数据，没有指定任何"意图"
+//                intent.putExtra("scanResult",text); // 把要传递的数据放到Intent中
+//                setResult(RESULT_OK,intent); //  向上一个活动返回数据
+//                finish();  //  销毁当前活动
+//            }
+//        });
+//        buttonScan = findViewById(R.id.buttonScan);
+//        buttonScan.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                String text = editText.getText().toString();
+//                if(pditemInfoFragment==null) {
+//                    pditemInfoFragment = new PditemInfoFragment();
+//                    getSupportFragmentManager().beginTransaction().add(R.id.scanLayout, pditemInfoFragment).commit();
+//                }
+//                String pre = getString(R.string.scan_Pre);
+//                if(text.length()> pre.length())
+//                    binder.queryPdItemBySN(text.substring(pre.length()));
+//                else{
+//                    //TODO 扫描格式错误保存信息
+//                }
+//            }
+//        });
     }
 
-    @Override
-    public boolean onKeyUp(int keyCode, KeyEvent event){
-        if (keyCode == KeyEvent.KEYCODE_BACK && hasChanged){
-            createQuitAlert();
-            return false;
-        }
-        return super.onKeyUp(keyCode, event);
-
-    }
+//    @Override
+//    public boolean onKeyUp(int keyCode, KeyEvent event){
+//        if (keyCode == KeyEvent.KEYCODE_BACK && hasChanged){
+//            //createQuitAlert();
+//            return false;
+//        }
+//        return super.onKeyUp(keyCode, event);
+//
+//    }
 
     private void createQuitAlert(){
         new AlertDialog.Builder(ScanActivity.this)
@@ -104,5 +183,10 @@ public class ScanActivity extends AppCompatActivity {
                 .create().show();
     }
 
-
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unbindService(conn);
+        unregisterReceiver(updateReceiver);
+    }
 }

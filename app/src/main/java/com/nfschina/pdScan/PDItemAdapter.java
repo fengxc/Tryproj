@@ -19,6 +19,10 @@ public class PDItemAdapter extends BaseAdapter {
         this.mContext = mContext;
     }
 
+    public void setItemList(List<PDItem> itemList) {
+        this.itemList = itemList;
+    }
+
     @Override
     public int getCount() {
         return itemList.size();
@@ -48,6 +52,7 @@ public class PDItemAdapter extends BaseAdapter {
         txt_pdSn.setText(itemList.get(position).getSn());
         txt_pdMark.setText(itemList.get(position).getMarkString());
         txt_pdPrincipalString.setText(itemList.get(position).getPrincipalString());
+
         return convertView;
     }
 }
