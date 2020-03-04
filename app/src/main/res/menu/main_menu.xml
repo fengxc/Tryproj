@@ -10,10 +10,6 @@
         android:title="查询"
         app:showAsAction="always" />
     <item
-        android:id="@+id/pdInfo"
-        android:icon="@android:drawable/ic_dialog_info"
-        android:title="盘点信息" />
-    <item
         android:id="@+id/importExcel"
         android:title="导入盘点" />
     <item

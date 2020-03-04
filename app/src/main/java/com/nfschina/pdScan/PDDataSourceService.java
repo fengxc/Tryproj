@@ -14,6 +14,7 @@ import com.nfschina.pdScan.dao.PDItemDataBase;
 
 import java.sql.Date;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,20 +30,89 @@ public class PDDataSourceService extends Service {
     private int deptIndex;
     private Map<Integer, String> deptIndexMap;
     private PDItem[] pdData;
-
+    private String excelName;
+    private String excelDate;
     private PDQueryBinder cur = new PDQueryBinder();
+
+    private SharedHelper helper;
     @Override
     public void onCreate() {
         Log.i("service:","onCreate");
         super.onCreate();
-        db = Room.databaseBuilder(getApplicationContext(), PDItemDataBase.class, "pdDatabase").build();
+        helper = new SharedHelper(getApplicationContext());
+        db = Room.databaseBuilder(getApplicationContext(), PDItemDataBase.class, "pdDatabase.db").build();
         deptIndexMap = new LinkedHashMap<>();
         dao = db.pdDao();
         dto = new PDDto();
+        if(helper.contains("deptIndexMap")){
+            String tString = (String) helper.get("deptIndexMap","");
+            deptIndexMap = getMapFromString(tString);
+        }
+        if(helper.contains("excelName")){
+            excelName = (String) helper.get("excelName","");
+        }
+        if(helper.contains("excelDate")){
+            excelDate = (String) helper.get("excelDate","");
+        }
+        if(helper.contains("viewStatus")){
+            viewStatus = (Integer) helper.get("viewStatus",new Integer(0));
+        }
+        if(helper.contains("deptIndex")){
+            deptIndex = (Integer) helper.get("deptIndex",new Integer(0));
+        }
+        if(helper.contains("dto."+"sn")){
+            String string = (String) helper.get("dto."+"sn","");
+            if(string!=null&&string.length()>0)
+                dto.setSn(string);
+        }
+        if(helper.contains("dto."+"type")){
+            String string = (String) helper.get("dto."+"type","");
+            if(string!=null&&string.length()>0)
+                dto.setType(string);
+        }
+        if(helper.contains("dto."+"mark")){
+            String string = (String) helper.get("dto."+"mark","");
+            if(string!=null&&string.length()>0)
+                dto.setMark(string);
+        }
+        if(helper.contains("dto."+"user")){
+            String string = (String) helper.get("dto."+"user","");
+            if(string!=null&&string.length()>0)
+                dto.setUser(string);
+        }
+        if(helper.contains("dto."+"locate")){
+            String string = (String) helper.get("dto."+"locate","");
+            if(string!=null&&string.length()>0)
+                dto.setLocate(string);
+        }
+        if(helper.contains("dto."+"purchaseTimeStart")){
+            Long longValue = (Long) helper.get("dto."+"purchaseTimeStart",new Long(0L));
+            if(longValue!=null&&longValue>0)
+                dto.setPurchaseTimeStart(new Date(longValue));
+        }
+        if(helper.contains("dto."+"purchaseTimeEnd")){
+            Long longValue = (Long) helper.get("dto."+"purchaseTimeEnd",new Long(0L));
+            if(longValue!=null&&longValue>0)
+                dto.setPurchaseTimeEnd(new Date(longValue));
+        }
         query();
     }
 
+    public String getExcelName() {
+        return excelName;
+    }
 
+    public void setExcelName(String excelName) {
+        this.excelName = excelName;
+    }
+
+    public String getExcelDate() {
+        return excelDate;
+    }
+
+    public void setExcelDate(String excelDate) {
+        this.excelDate = excelDate;
+    }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -73,8 +143,57 @@ public class PDDataSourceService extends Service {
     }
 
     public void refreshData() {
+        helper.put("excelName",excelName);
+        helper.put("excelDate",excelDate);
+        helper.put("viewStatus",viewStatus);
+        helper.put("deptIndex",deptIndex);
+        StringBuffer sString = getValueStringFromMap(deptIndexMap);
+        helper.put("deptIndexMap", sString.toString());
+        helper.put("dto."+"sn",dto.getSn());
+        helper.put("dto."+"type",dto.getType());
+        helper.put("dto."+"mark",dto.getMark());
+        helper.put("dto."+"user",dto.getUser());
+        helper.put("dto."+"locate",dto.getLocate());
+        if(dto.getPurchaseTimeStart()!=null)
+            helper.put("dto."+"purchaseTimeStart",dto.getPurchaseTimeStart().getTime());
+        else
+            helper.put("dto."+"purchaseTimeStart",null);
+        if(dto.getPurchaseTimeEnd()!=null)
+            helper.put("dto."+"purchaseTimeEnd",dto.getPurchaseTimeEnd().getTime());
+        else
+            helper.put("dto."+"purchaseTimeEnd",null);
+
         Intent intent = new Intent("com.nfschina.pdScan.PDDataSourceService_ListUpdate");
         sendBroadcast(intent);
+    }
+
+    public static Map<Integer, String> getMapFromString(String st) {
+        Map<Integer, String> rMap = new LinkedHashMap<>();
+        String[] splited = st.split(",");
+        int i = 0;
+        for(String s:splited){
+            rMap.put(i, s);
+            i++;
+        }
+        return rMap;
+    }
+
+
+    public static StringBuffer getValueStringFromMap(Map<Integer, String> deptIndexMap) {
+        Iterator entries = deptIndexMap.entrySet().iterator();
+        StringBuffer sString =new StringBuffer("");
+        while (entries.hasNext()) {
+
+            Map.Entry entry = (Map.Entry) entries.next();
+
+            String value = (String) entry.getValue();
+
+            sString.append(value).append(",");
+
+        }
+        if(sString.length()>=1)
+            sString.deleteCharAt(sString.length()-1);
+        return sString;
     }
 
 
@@ -190,8 +309,10 @@ public class PDDataSourceService extends Service {
             dto.setPurchaseTimeEnd(end);
             query();
         }
-        public void importPDList(ArrayList<PDItem> list){
+        public void importPDList(ArrayList<PDItem> list, String name, String dateString){
             importNewPD(list);
+            excelName = name;
+            excelDate = dateString;
         }
 
 
@@ -211,7 +332,21 @@ public class PDDataSourceService extends Service {
             return deptIndexMap;
         }
 
+        public String getExcelName() {
+            return excelName;
+        }
+
+        public String getExcelDate() {
+            return excelDate;
+        }
+
+        public int getViewStatus(){
+            return viewStatus;
+        }
+
+        public int getDeptIndex() {
+            return deptIndex;
+        }
 
     }
-
 }

@@ -18,7 +18,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class SelectFileActivity extends AppCompatActivity {
     Button buttonSelectFile;
@@ -62,12 +64,15 @@ public class SelectFileActivity extends AppCompatActivity {
             }
 
 
-            Toast.makeText(SelectFileActivity.this, "数据量"+mData.size()+"...", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(SelectFileActivity.this, "数据量"+mData.size()+"...", Toast.LENGTH_SHORT).show();
 
-                Intent i = new Intent(SelectFileActivity.this, MainActivity.class );
-                Bundle bundle = new Bundle();
-                bundle.putSerializable("mData", mData);
-                i.putExtras(bundle);
+            Intent i = new Intent(SelectFileActivity.this, MainActivity.class );
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("mData", mData);
+            bundle.putString("name", cfile.getName());
+            Date lastModified = new Date(cfile.lastModified());
+            bundle.putString("date", new SimpleDateFormat("yyyy/MM/dd hh:mm:ss").format(lastModified));
+            i.putExtras(bundle);
             setResult(RESULT_OK,i); //  向上一个活动返回数据
             finish();
 

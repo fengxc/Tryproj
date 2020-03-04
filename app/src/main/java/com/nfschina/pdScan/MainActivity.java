@@ -4,7 +4,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.room.Room;
 
 import android.app.Service;
 import android.content.BroadcastReceiver;
@@ -22,21 +21,17 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.tabs.TabLayout;
-import com.nfschina.pdScan.dao.PDDao;
-import com.nfschina.pdScan.dao.PDDto;
-import com.nfschina.pdScan.dao.PDItemDataBase;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -59,10 +54,11 @@ public class MainActivity extends AppCompatActivity {
 
     private BroadcastReceiver receiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
-            updateList();
+            updateUIStatus();
         }
     };
     private NavigationView navigationView;
+    private TabLayout tabs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onServiceConnected(ComponentName name, IBinder service) {
                 binder = (PDDataSourceService.PDQueryBinder) service;
-                updateList();
+                updateUIStatus();
 
             }
 
@@ -113,21 +109,28 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 Toast.makeText(getApplicationContext(), item.getOrder()+"", Toast.LENGTH_SHORT).show();
-                toolbar.setTitle(R.string.alldept);
                 binder.changeDept(item.getOrder());
-                updateList();
+                updateUIStatus();
+                String deptName = (String) binder.getMap().get(item.getOrder());
+                toolbar.setTitle(deptName);
+
                 drawerLayout.closeDrawer(Gravity.LEFT);
                 return false;
             }
         });
 
-        TabLayout tabs = findViewById(R.id.statusTab);
+        tabs = findViewById(R.id.statusTab);
+        SharedHelper helper = new SharedHelper(getApplicationContext());
+        if(helper.contains("viewStatus")){
+            Integer viewStatus = (Integer) helper.get("viewStatus",new Integer(0));
+            tabs.getTabAt(viewStatus).select();
+        }
         tabs.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 Toast.makeText(getApplicationContext(), tab.getPosition()+"", Toast.LENGTH_SHORT).show();
                 binder.changeStatus(tab.getPosition());
-                updateList();
+                updateUIStatus();
             }
 
             @Override
@@ -190,13 +193,17 @@ public class MainActivity extends AppCompatActivity {
 //        });
     }
 
-    private void updateList() {
+    private void updateUIStatus() {
         mData = binder.getCurrentResult();
         mAdapter = new PDItemAdapter(mData, mContext);
         list_pdItem.setAdapter(mAdapter);
+        navigationView.getMenu().clear();
+        TextView head = findViewById(R.id.headtitle);
+        head.setText(binder.getExcelName());
+        TextView sub = findViewById(R.id.headsubtitle);
+        sub.setText(binder.getExcelDate());
         Map map = binder.getMap();
         Iterator entries = map.entrySet().iterator();
-        navigationView.getMenu().clear();
         while (entries.hasNext()) {
 
             Map.Entry entry = (Map.Entry) entries.next();
@@ -209,6 +216,9 @@ public class MainActivity extends AppCompatActivity {
 
             navigationView.getMenu().add(1, key, key, value);
         }
+        int status = binder.getViewStatus();
+        String nowDeptName = (String) map.get(binder.getDeptIndex());
+        toolbar.setTitle(nowDeptName);
     }
 
     @Override
@@ -228,13 +238,15 @@ public class MainActivity extends AppCompatActivity {
             case 2://查询
                 if (resultCode == RESULT_OK) {
                     //binder.refresh();
-                    updateList();
+                    updateUIStatus();
                 }
                 break;
             case 3://导入
                 if (resultCode == RESULT_OK) {
                     ArrayList<PDItem> newData = (ArrayList<PDItem>) data.getSerializableExtra("mData");
-                    binder.importPDList(newData);
+                    String name =data.getStringExtra("name");
+                    String date =data.getStringExtra("date");
+                    binder.importPDList(newData,name,date);
                 }
                 break;
             default:
@@ -297,8 +309,6 @@ public class MainActivity extends AppCompatActivity {
 
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.pdInfo:
-                return true;
             case R.id.importExcel:
                 Intent i = new Intent(MainActivity.this, SelectFileActivity.class);
                 MainActivity.this.startActivityForResult(i, 3);
