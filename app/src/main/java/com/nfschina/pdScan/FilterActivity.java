@@ -16,6 +16,7 @@ import android.widget.EditText;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.preference.PreferenceFragmentCompat;
 
 import com.nfschina.pdScan.dao.PDDto;
@@ -95,10 +96,15 @@ public class FilterActivity extends AppCompatActivity {
 //                .beginTransaction()
 //                .replace(R.id.settings, new SettingsFragment())
 //                .commit();
-        ActionBar actionBar = getSupportActionBar();
-        //if (actionBar != null) {
-            //actionBar.setDisplayHomeAsUpEnabled(true);
-        //}
+        Toolbar toolbarS =
+                (Toolbar) findViewById(R.id.toolbarf);
+        setSupportActionBar(toolbarS);
+
+        // Get a support ActionBar corresponding to this toolbar
+        ActionBar ab = getSupportActionBar();
+
+        // Enable the Up button
+        ab.setDisplayHomeAsUpEnabled(true);
         bindService(intentService,conn, Service.BIND_AUTO_CREATE);
         snfield = findViewById(R.id.fieldsn);
         typefield = findViewById(R.id.fieldtype);

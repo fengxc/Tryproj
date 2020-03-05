@@ -54,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             binder = (PDDataSourceService.PDQueryBinder) service;
-            updateUIStatus();
+            //updateUIStatus();
 
         }
 
@@ -95,6 +95,12 @@ public class MainActivity extends AppCompatActivity {
             //parent 代表listView View 代表 被点击的列表项 position 代表第几个 id 代表列表编号
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Toast.makeText(MainActivity.this, mData.get(position).getSn(), Toast.LENGTH_LONG).show();
+                Intent i2 = new Intent(MainActivity.this, PDItemInfoActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("mData", mData.get(position));
+                //bundle.putString("mData", mData.get(position).getSn());
+                i2.putExtras(bundle);
+                MainActivity.this.startActivity(i2);
             }
         });
         toolbar = findViewById(R.id.toolbar);

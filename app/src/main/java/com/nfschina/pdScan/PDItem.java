@@ -42,6 +42,7 @@ public class PDItem implements Serializable {
     private String scrappedWayString;//报废去向
     private String securitySNString;
     private String HDSNString;
+    private String conflictLog;
 
     private boolean status;
 
@@ -259,5 +260,13 @@ public class PDItem implements Serializable {
 
     public void setHDSNString(String HDSNString) {
         this.HDSNString = HDSNString;
+    }
+
+    public String getConflictLog() {
+        return conflictLog;
+    }
+
+    public void setConflictLog(String conflictLog) {
+        this.conflictLog = conflictLog;
     }
 }

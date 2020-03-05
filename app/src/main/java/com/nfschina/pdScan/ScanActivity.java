@@ -2,6 +2,7 @@ package com.nfschina.pdScan;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 
 import android.app.AlertDialog;
@@ -77,7 +78,15 @@ public class ScanActivity extends AppCompatActivity {
         intentService.setPackage("com.nfschina.pdScan");
         bindService(intentService,conn, Service.BIND_AUTO_CREATE);
         registerReceiver(updateReceiver, updateFilter);
+        Toolbar toolbarS =
+                (Toolbar) findViewById(R.id.toolbarS);
+        setSupportActionBar(toolbarS);
 
+        // Get a support ActionBar corresponding to this toolbar
+        ActionBar ab = getSupportActionBar();
+
+        // Enable the Up button
+        ab.setDisplayHomeAsUpEnabled(true);
         //buttonSave = findViewById(R.id.buttonsave);
         //buttonQuery = findViewById(R.id.buttonquery);
         editText = findViewById(R.id.fileActEditText);
