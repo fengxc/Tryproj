@@ -2,19 +2,23 @@ package com.nfschina.pdScan;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.appcompat.widget.Toolbar;
 import androidx.drawerlayout.widget.DrawerLayout;
 
+import android.app.AlertDialog;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.IBinder;
+import android.text.InputType;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -22,6 +26,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
+import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -45,7 +51,8 @@ public class MainActivity extends AppCompatActivity {
     private ListView list_pdItem;
     private FloatingActionButton addButton;
     private String sep = "\n";
-
+    private boolean auth = false;
+    private String pw;
     private int mode = 0;//0全部 1未扫 2已扫
     private Toolbar toolbar;
     PDDataSourceService.PDQueryBinder binder;
@@ -71,6 +78,7 @@ public class MainActivity extends AppCompatActivity {
     };
     private NavigationView navigationView;
     private TabLayout tabs;
+    private SharedHelper helper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -134,7 +142,14 @@ public class MainActivity extends AppCompatActivity {
         });
 
         tabs = findViewById(R.id.statusTab);
-        SharedHelper helper = new SharedHelper(getApplicationContext());
+        helper = new SharedHelper(getApplicationContext());
+        if(helper.contains("password")){
+            pw=(String) helper.get("password", "");
+        }else {
+            auth = true;
+            pw="";
+        }
+
         if(helper.contains("viewStatus")){
             Integer viewStatus = (Integer) helper.get("viewStatus",new Integer(0));
             tabs.getTabAt(viewStatus).select();
@@ -204,6 +219,16 @@ public class MainActivity extends AppCompatActivity {
 //            public void onClick(View v) {
 //            }
 //        });
+
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(!auth)
+            showPasswordValidationInput(pw);
+
     }
 
     private void updateUIStatus() {
@@ -298,7 +323,29 @@ public class MainActivity extends AppCompatActivity {
     private void expotResult() {
         String filecontentText = "";
         for (int index = 0; index < mData.size(); index++) {
-            filecontentText += mData.get(index).getSn() + "," + mData.get(index).getLocateString() + "," + mData.get(index).isStatus() + "\r\n";
+            if(mData.get(index).isStatus())
+                filecontentText += mData.get(index).getSn()  + "\r\n";
+        }
+        String filename = "Qone/" + System.currentTimeMillis() + ".txt";
+        try {
+            //判断SDcard是否存在并且可读写
+            if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+                saveToSDCard(filename, filecontentText);
+                Toast.makeText(getApplicationContext(), R.string.success, Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(getApplicationContext(), R.string.sdcarderror, Toast.LENGTH_SHORT).show();
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void expotResultLog() {
+        String filecontentText = "";
+        for (int index = 0; index < mData.size(); index++) {
+            if(mData.get(index).getConflictLog()!=null&&mData.get(index).getConflictLog().length()>0)
+                filecontentText += mData.get(index).getSn() + "," + mData.get(index).getConflictLog()  + "\r\n";
         }
         String filename = "Qone/" + System.currentTimeMillis() + ".txt";
         try {
@@ -333,17 +380,124 @@ public class MainActivity extends AppCompatActivity {
                 expotResult();
                 return true;
             case R.id.exportConflictLog:
-
+                expotResultLog();
                 return true;
             case R.id.searchMenu:
                 Intent i2 = new Intent(MainActivity.this, FilterActivity.class);
                 MainActivity.this.startActivityForResult(i2, 2);
+                return true;
+            case R.id.changepw:
+                MainActivity.this.showPasswordChangeInput();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
 
     }
+
+
+    public void showPasswordValidationInput(final String pw){
+        final EditText edit = new EditText(mContext);
+        edit.setInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD);
+        final AlertDialog.Builder editDialog = new AlertDialog.Builder(mContext);
+        editDialog.setTitle("请输入密码");
+        editDialog.setIcon(R.mipmap.ic_launcher_round);
+        editDialog.setCancelable(false);
+        //设置dialog布局
+        editDialog.setView(edit);
+
+        //设置按钮
+        editDialog.setPositiveButton("提交"
+                , new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        if(edit.getText().toString().equals(pw)){
+                            auth = true;
+                            dialog.dismiss();
+                        }else{
+                            showPasswordValidationInput(pw);
+                            dialog.dismiss();
+                        }
+
+                    }
+                });
+        editDialog.setNegativeButton("退出"
+                , new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        MainActivity.this.finish();
+                    }
+                });
+
+        editDialog.create().show();
+    }
+
+
+    public void showPasswordChangeInput(){
+        final EditText edit = new EditText(mContext);
+        edit.setEms(12);
+        final EditText edit2 = new EditText(mContext);
+        edit2.setEms(12);
+        final LinearLayout l = new LinearLayout(mContext);
+        edit.setInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD);
+        edit2.setInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD);
+        final AlertDialog.Builder editDialog = new AlertDialog.Builder(mContext);
+        editDialog.setTitle("请输入新密码两次，留空视为取消密码");
+        editDialog.setIcon(R.mipmap.ic_launcher_round);
+        editDialog.setCancelable(false);
+        //设置dialog布局
+        l.addView(edit);
+        l.addView(edit2);
+        l.setOrientation(LinearLayout.VERTICAL);
+        editDialog.setView(l);
+
+        //设置按钮
+        editDialog.setPositiveButton("提交",null);
+//        editDialog.setPositiveButton("提交"
+//                , new DialogInterface.OnClickListener() {
+//                    @Override
+//                    public void onClick(DialogInterface dialog, int which) {
+////                        if(edit.getText().toString().equals(pw)){
+////                            auth = true;
+////                            dialog.dismiss();
+////                        }else{
+////                            showPasswordValidationInput(pw);
+////                            dialog.dismiss();
+////                        }
+//
+//                    }
+//                });
+        editDialog.setNegativeButton("取消"
+                , new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+
+        final AlertDialog a = editDialog.create();
+        a.show();
+        a.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v)
+            {
+                        if(edit.getText().toString().equals(edit2.getText().toString())){
+                            String newPw = edit.getText().toString();
+                            if(newPw.length()>0)
+                               helper.put("password",newPw);
+                            else
+                                helper.remove("password");
+                            a.dismiss();
+                        }else{
+                            edit.setText("");
+                            edit2.setText("");
+                            a.setTitle("两次输入不一致，请重试");
+                        }
+            }
+        });
+    }
+
 
     @Override
     protected void onDestroy() {

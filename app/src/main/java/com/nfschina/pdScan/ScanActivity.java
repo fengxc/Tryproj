@@ -28,7 +28,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ScanActivity extends AppCompatActivity {
+public class ScanActivity extends AppCompatActivity  implements PditemInfoFragment.PDItemInfoFragmentListener{
     private ServiceConnection conn =  new ServiceConnection() {
 
         @Override
@@ -49,8 +49,21 @@ public class ScanActivity extends AppCompatActivity {
             if(pditemInfoFragment!=null) {
                 PDItem[] result = binder.getPdItemSNQueryResult();
                 if (result.length > 0) {
-                    pditemInfoFragment.setCuerrentPDItem(result[0]);
                     binder.checkPDItem(result[0].getSn());
+                    result[0].setStatus(true);
+                    String conflictLog = "";
+                    if(binder.getDeptIndex()>0) {
+                        if(binder.getMap().get(binder.getDeptIndex()).toString().equals(result[0].getDeptString())){
+                            conflictLog = "";
+                        }else{
+                            conflictLog = "盘点范围为"+binder.getMap().get(binder.getDeptIndex()).toString()
+                                    +"，资产所属部门为"+result[0].getDeptString()+"，两者不一致";
+                        }
+                        result[0].setConflictLog(conflictLog);
+
+                    }
+                    binder.updateConflictLog(result[0]);
+                    pditemInfoFragment.setCuerrentPDItem(result[0]);
                 }
                 pditemInfoFragment.updateUI();
             }
@@ -197,5 +210,12 @@ public class ScanActivity extends AppCompatActivity {
         super.onDestroy();
         unbindService(conn);
         unregisterReceiver(updateReceiver);
+    }
+
+    @Override
+    public void updatePDItem(PDItem cuerrentPDItem) {
+        Toast.makeText(this,
+                cuerrentPDItem.getConflictLog().trim(),Toast.LENGTH_SHORT).show();
+        binder.updateConflictLog(cuerrentPDItem);
     }
 }

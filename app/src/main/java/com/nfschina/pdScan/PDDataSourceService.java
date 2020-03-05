@@ -222,7 +222,19 @@ public class PDDataSourceService extends Service {
 
     }
 
-    private void checkPDItemBySn(final String sn) {
+    private void updatePDItemConflictLog(final PDItem pdItem) {
+        new Thread(new Runnable() {
+            public void run() {
+                dao.updatePDItem(pdItem);
+                execQuery();
+                refreshData();
+
+            }
+        }).start();
+    }
+
+
+        private void checkPDItemBySn(final String sn) {
         new Thread(new Runnable() {
             public void run() {
                 PDItem[] rl = dao.findPDItem(sn);
@@ -368,6 +380,8 @@ public class PDDataSourceService extends Service {
         public PDItem[] getPdItemSNQueryResult() {
             return pdItemSNQueryResult;
         }
+
+        public void updateConflictLog(PDItem pdItem){updatePDItemConflictLog(pdItem);}
     }
 
 
