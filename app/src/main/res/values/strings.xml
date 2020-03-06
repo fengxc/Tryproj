@@ -41,7 +41,7 @@
 
     <string name="home_second">Home Second</string>
     <string name="alldept">全部</string>
-    <string name="scan_Pre">资产编号:</string>
+    <string name="scan_Pre"> 资产编号:</string>
     <string name="title_pandian">盘点</string>
     <string name="title_filter">查询条件</string>
     <string name="title_detailinfo">详细信息</string>

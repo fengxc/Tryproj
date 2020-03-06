@@ -21,6 +21,9 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.text.SimpleDateFormat;
+import java.util.logging.SimpleFormatter;
+
 public class PditemInfoFragment extends Fragment {
 
     public PDItemInfoFragmentListener mListener;
@@ -49,6 +52,36 @@ public class PditemInfoFragment extends Fragment {
             type.setText(cuerrentPDItem.getTypeString());
             TextView mark = getView().findViewById(R.id.infoMarkContent);
             mark.setText(cuerrentPDItem.getMarkString());
+            TextView purchaseTime = getView().findViewById(R.id.infoPurchaseTimeContent);
+            purchaseTime.setText(new SimpleDateFormat("yyyy-MM-dd").format(cuerrentPDItem.getPurchaseTime()));
+            TextView dept = getView().findViewById(R.id.infoDeptContent);
+            dept.setText(cuerrentPDItem.getDeptString());
+            TextView user = getView().findViewById(R.id.infoUserContent);
+            user.setText(cuerrentPDItem.getUserString());
+            TextView principal = getView().findViewById(R.id.infoPrincipalContent);
+            principal.setText(cuerrentPDItem.getPrincipalString());
+            TextView locate = getView().findViewById(R.id.infoLocateContent);
+            locate.setText(cuerrentPDItem.getLocateString());
+            TextView eqState = getView().findViewById(R.id.infoEqStateContent);
+            eqState.setText(cuerrentPDItem.getEqStateString());
+            TextView security = getView().findViewById(R.id.infoSecurityContent);
+            security.setText(cuerrentPDItem.getSecurityString());
+            TextView securityLevel = getView().findViewById(R.id.infoSecurityLevelContent);
+            securityLevel.setText(cuerrentPDItem.getSecurityLevelString());
+            TextView securitySN = getView().findViewById(R.id.infoSecuritySNContent);
+            securitySN.setText(cuerrentPDItem.getSecuritySNString());
+            if(cuerrentPDItem.getSecuritySNString()==null||cuerrentPDItem.getSecuritySNString().length()<=0){
+                TextView securitySNLabel = getView().findViewById(R.id.infoSecuritySNLabel);
+                securitySNLabel.setVisibility(View.GONE);
+                securitySN.setVisibility(View.GONE);
+            }
+            TextView hdsn = getView().findViewById(R.id.infoHDSNContent);
+            hdsn.setText(cuerrentPDItem.getHDSNString());
+            if(cuerrentPDItem.getHDSNString()==null||cuerrentPDItem.getHDSNString().length()<=0){
+                TextView hdsnLabel = getView().findViewById(R.id.infoHDSNLabel);
+                hdsnLabel.setVisibility(View.GONE);
+                hdsn.setVisibility(View.GONE);
+            }
         }
     }
 

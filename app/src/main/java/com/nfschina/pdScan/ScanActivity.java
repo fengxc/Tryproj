@@ -128,9 +128,10 @@ public class ScanActivity extends AppCompatActivity  implements PditemInfoFragme
                         getSupportFragmentManager().beginTransaction().add(R.id.scanLayout, pditemInfoFragment).commit();
                     }
                     String pre = getString(R.string.scan_Pre);
-                    if(str.length()> pre.length()) {
-                        str=str.substring(pre.length());
+                    if(str.indexOf(":")>0) {
                         str=str.substring(0,str.length()-1);
+                        str=str.split(":")[1];
+
                         binder.queryPdItemBySN(str);
                     }else{
                         //TODO 扫描格式错误保存信息

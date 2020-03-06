@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#770000"
+    android:background="#EFEFEF"
     >
 
 
@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:paddingLeft="8dp"
         android:textSize="17dp"
-        android:textColor="#E7E7E7" />
+        android:textColor="#444444" />
         <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -21,16 +21,16 @@
             android:id="@+id/itemMarkString"
             android:layout_width="400px"
             android:layout_height="wrap_content"
-            android:paddingLeft="8px"
-            android:textSize="15dp"
-            android:textColor="#B4B4B9"/>
+            android:paddingLeft="11px"
+            android:textSize="14dp"
+            android:textColor="#444444"/>
         <TextView
             android:id="@+id/itemPrincipalString"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingLeft="8px"
-            android:textSize="15dp"
-            android:textColor="#B4B4B9"/>
+            android:paddingLeft="11px"
+            android:textSize="14dp"
+            android:textColor="#444444"/>
     </LinearLayout>
 
 
