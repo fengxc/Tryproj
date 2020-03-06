@@ -45,4 +45,6 @@
     <string name="title_pandian">盘点</string>
     <string name="title_filter">查询条件</string>
     <string name="title_detailinfo">详细信息</string>
+    <string name="pdlog_notfound">未找到资产信息</string>
+
 </resources>

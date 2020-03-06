@@ -4,8 +4,11 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.app.Service;
 import android.content.BroadcastReceiver;
@@ -15,6 +18,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.IBinder;
@@ -260,6 +264,9 @@ public class MainActivity extends AppCompatActivity {
         int status = binder.getViewStatus();
         String nowDeptName = (String) map.get(binder.getDeptIndex());
         toolbar.setTitle(nowDeptName);
+        tabs.getTabAt(0).setText("全部"+"("+binder.getNumofAll()+")");
+        tabs.getTabAt(1).setText("已盘点"+"("+binder.getNumofDone()+")");
+        tabs.getTabAt(2).setText("未盘点"+"("+binder.getNumofUnDone()+")");
     }
 
     @Override
@@ -321,45 +328,119 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void expotResult() {
-        String filecontentText = "";
-        for (int index = 0; index < mData.size(); index++) {
-            if(mData.get(index).isStatus())
-                filecontentText += mData.get(index).getSn()  + "\r\n";
-        }
-        String filename = "Qone/" + System.currentTimeMillis() + ".txt";
-        try {
-            //判断SDcard是否存在并且可读写
-            if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
-                saveToSDCard(filename, filecontentText);
-                Toast.makeText(getApplicationContext(), R.string.success, Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(getApplicationContext(), R.string.sdcarderror, Toast.LENGTH_SHORT).show();
-            }
+        if (!getPermission())
+            return;
+        final EditText edit = new EditText(mContext);
+        edit.setInputType(InputType.TYPE_CLASS_TEXT);
+        final AlertDialog.Builder editDialog = new AlertDialog.Builder(mContext);
+        editDialog.setTitle("请输入导出文件名");
+        editDialog.setIcon(R.mipmap.ic_launcher_round);
+        //设置dialog布局
+        editDialog.setView(edit);
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        //设置按钮
+        editDialog.setPositiveButton("提交"
+                , new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        String filenameStr = edit.getText().toString();
+                        final String filename = "Qone/" + filenameStr + ".txt";
+
+                        new Thread(new Runnable() {
+                            public void run() {
+
+                                String filecontentText = "";
+                                PDItem[] allPDItem= binder.getPdItemsForExport();
+
+                                for (int index = 0; index < allPDItem.length; index++) {
+                                        filecontentText += getString(R.string.scan_Pre)+allPDItem[index].getSn()  + "\r\n";
+                                }
+                                try {
+                                    //判断SDcard是否存在并且可读写
+                                    if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+                                        saveToSDCard(filename, filecontentText);
+                                        Toast.makeText(getApplicationContext(), R.string.success, Toast.LENGTH_SHORT).show();
+                                    } else {
+                                        Toast.makeText(getApplicationContext(), R.string.sdcarderror, Toast.LENGTH_SHORT).show();
+                                    }
+
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }).start();
+
+                        dialog.dismiss();
+
+                    }
+                });
+        editDialog.setNegativeButton("取消"
+                , new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+
+        editDialog.create().show();
     }
 
     private void expotResultLog() {
-        String filecontentText = "";
-        for (int index = 0; index < mData.size(); index++) {
-            if(mData.get(index).getConflictLog()!=null&&mData.get(index).getConflictLog().length()>0)
-                filecontentText += mData.get(index).getSn() + "," + mData.get(index).getConflictLog()  + "\r\n";
-        }
-        String filename = "Qone/" + System.currentTimeMillis() + ".txt";
-        try {
-            //判断SDcard是否存在并且可读写
-            if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
-                saveToSDCard(filename, filecontentText);
-                Toast.makeText(getApplicationContext(), R.string.success, Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(getApplicationContext(), R.string.sdcarderror, Toast.LENGTH_SHORT).show();
-            }
+        if (!getPermission())
+            return;
+        final EditText edit = new EditText(mContext);
+        edit.setInputType(InputType.TYPE_CLASS_TEXT);
+        final AlertDialog.Builder editDialog = new AlertDialog.Builder(mContext);
+        editDialog.setTitle("请输入导出文件名");
+        editDialog.setIcon(R.mipmap.ic_launcher_round);
+        //设置dialog布局
+        editDialog.setView(edit);
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        //设置按钮
+        editDialog.setPositiveButton("提交"
+                , new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                            String filenameStr = edit.getText().toString();
+                            final String filename = "Qone/" + filenameStr + ".csv";
+                            new Thread(new Runnable() {
+                                public void run() {
+                                    String filecontentText = "";
+                                    PDLog[] allPDLogs= binder.getPdLogsForExport();
+                                    for (int index = 0; index < allPDLogs.length; index++) {
+                                        filecontentText += index +1+ "," + allPDLogs[index].getScanDate().toString() + "," + allPDLogs[index].getSn() + "," + allPDLogs[index].getConflictLog()  + "\r\n";
+                                    }
+
+                                    try {
+                                        //判断SDcard是否存在并且可读写
+                                        if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+                                            saveToSDCard(filename, filecontentText);
+                                            Toast.makeText(getApplicationContext(), R.string.success, Toast.LENGTH_SHORT).show();
+                                        } else {
+                                            Toast.makeText(getApplicationContext(), R.string.sdcarderror, Toast.LENGTH_SHORT).show();
+                                        }
+
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            }).start();
+
+                            dialog.dismiss();
+
+                    }
+                });
+        editDialog.setNegativeButton("取消"
+                , new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+
+        editDialog.create().show();
+
+
     }
 
     @Override
@@ -498,6 +579,24 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    private boolean getPermission() {
+        //检查权限是否存在
+        if (ContextCompat.checkSelfPermission(mContext,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            //向用户申请授权
+            ActivityCompat.requestPermissions(this, new String[]{
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                    Manifest.permission.READ_EXTERNAL_STORAGE
+            }, 1);
+
+        }
+
+        return  (ContextCompat.checkSelfPermission(mContext,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                == PackageManager.PERMISSION_GRANTED);
+    }
 
     @Override
     protected void onDestroy() {

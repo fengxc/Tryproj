@@ -8,6 +8,7 @@ import androidx.room.Query;
 import androidx.room.Update;
 
 import com.nfschina.pdScan.PDItem;
+import com.nfschina.pdScan.PDLog;
 
 import java.sql.Date;
 
@@ -56,5 +57,26 @@ public interface PDDao {
 
     @Query("SELECT * FROM PDItem WHERE (sn like :sn or (:sn is null)) and (typeString like :type or (:type is null)) and (markString like :mark or (:mark is null)) and (userString like :user or (:user is null)) and (locateString like :locate or (:locate is null)) and (deptString like :dept or (:dept is null)) and (purchaseTime >= :start or (:start is null)) and (purchaseTime < :end or (:end is null)) and status = 0")
     public PDItem[] loadUndoneFilteredPDItems(String  sn, String type, String mark, String user, String locate, Date start, Date end, String dept);
+
+    @Query("SELECT count(*) FROM PDItem WHERE (sn like :sn or (:sn is null)) and (typeString like :type or (:type is null)) and (markString like :mark or (:mark is null)) and (userString like :user or (:user is null)) and (locateString like :locate or (:locate is null)) and (deptString like :dept or (:dept is null)) and (purchaseTime >= :start or (:start is null)) and (purchaseTime < :end or (:end is null))  ")
+    public int countAllFilteredPDItems(String  sn, String type, String mark, String user, String locate, Date start, Date end, String dept);
+
+    @Query("SELECT count(*) FROM PDItem WHERE (sn like :sn or (:sn is null)) and (typeString like :type or (:type is null)) and (markString like :mark or (:mark is null)) and (userString like :user or (:user is null)) and (locateString like :locate or (:locate is null)) and (deptString like :dept or (:dept is null)) and (purchaseTime >= :start or (:start is null)) and (purchaseTime < :end or (:end is null)) and status = 1")
+    public int countDoneFilteredPDItems(String  sn, String type, String mark, String user, String locate, Date start, Date end, String dept);
+
+    @Query("SELECT count(*) FROM PDItem WHERE (sn like :sn or (:sn is null)) and (typeString like :type or (:type is null)) and (markString like :mark or (:mark is null)) and (userString like :user or (:user is null)) and (locateString like :locate or (:locate is null)) and (deptString like :dept or (:dept is null)) and (purchaseTime >= :start or (:start is null)) and (purchaseTime < :end or (:end is null)) and status = 0")
+    public int countUndoneFilteredPDItems(String  sn, String type, String mark, String user, String locate, Date start, Date end, String dept);
+
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    public void insertPDLog(PDLog pdLog);
+
+    @Query("SELECT * FROM PDLog")
+    public PDLog[] getAllPDLog();
+
+
+
+    @Delete
+    public void deletePDLog(PDLog[] pdLogs);
 
 }

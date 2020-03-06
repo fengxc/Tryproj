@@ -22,9 +22,11 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,6 +51,10 @@ public class ScanActivity extends AppCompatActivity  implements PditemInfoFragme
             if(pditemInfoFragment!=null) {
                 PDItem[] result = binder.getPdItemSNQueryResult();
                 if (result.length > 0) {
+                    if(pditemInfoFragment==null) {
+                        pditemInfoFragment = new PditemInfoFragment();
+                    }
+                    getSupportFragmentManager().beginTransaction().replace(R.id.scanLayout, pditemInfoFragment).commit();
                     binder.checkPDItem(result[0].getSn());
                     result[0].setStatus(true);
                     String conflictLog = "";
@@ -64,8 +70,11 @@ public class ScanActivity extends AppCompatActivity  implements PditemInfoFragme
                     }
                     binder.updateConflictLog(result[0]);
                     pditemInfoFragment.setCuerrentPDItem(result[0]);
+                    pditemInfoFragment.updateUI();
+                }else{
+                    NoDataFragment noDataFragment = new NoDataFragment();
+                    getSupportFragmentManager().beginTransaction().replace(R.id.scanLayout, noDataFragment).commit();
                 }
-                pditemInfoFragment.updateUI();
             }
         }
     };
@@ -123,18 +132,24 @@ public class ScanActivity extends AppCompatActivity  implements PditemInfoFragme
                 hasChanged=true;
                 String str = editText.getText().toString();
                 if(str.contains("\n")){
-                    if(pditemInfoFragment==null) {
-                        pditemInfoFragment = new PditemInfoFragment();
-                        getSupportFragmentManager().beginTransaction().add(R.id.scanLayout, pditemInfoFragment).commit();
-                    }
-                    String pre = getString(R.string.scan_Pre);
                     if(str.indexOf(":")>0) {
+                        if(pditemInfoFragment==null) {
+                            pditemInfoFragment = new PditemInfoFragment();
+                        }
+                        getSupportFragmentManager().beginTransaction().replace(R.id.scanLayout, pditemInfoFragment).commit();
                         str=str.substring(0,str.length()-1);
                         str=str.split(":")[1];
-
                         binder.queryPdItemBySN(str);
                     }else{
-                        //TODO 扫描格式错误保存信息
+                        NoDataFragment noDataFragment = new NoDataFragment();
+                        getSupportFragmentManager().beginTransaction().replace(R.id.scanLayout, noDataFragment).commit();
+
+                        str=str.substring(0,str.length()-1);
+                        PDLog pdLog = new PDLog();
+                        pdLog.setScanDate(new Date(System.currentTimeMillis()));
+                        pdLog.setSn(str);
+                        pdLog.setConflictLog(getString(R.string.pdlog_notfound));
+                        binder.insertPDLog(pdLog);
                     }
 
                     editText.setText("");
@@ -159,13 +174,13 @@ public class ScanActivity extends AppCompatActivity  implements PditemInfoFragme
 //                String text = editText.getText().toString();
 //                if(pditemInfoFragment==null) {
 //                    pditemInfoFragment = new PditemInfoFragment();
-//                    getSupportFragmentManager().beginTransaction().add(R.id.scanLayout, pditemInfoFragment).commit();
+//                    getSupportFragmentManager().beginTransaction().replace(R.id.scanLayout, pditemInfoFragment).commit();
 //                }
 //                String pre = getString(R.string.scan_Pre);
 //                if(text.length()> pre.length())
 //                    binder.queryPdItemBySN(text.substring(pre.length()));
 //                else{
-//                    //TODO 扫描格式错误保存信息
+//
 //                }
 //            }
 //        });

@@ -24,7 +24,9 @@ public class PDDataSourceService extends Service {
     private PDItemDataBase db;
     private PDDao dao;
     private PDDto dto;
-
+    private int numofAll = 0 ;
+    private int numofDone = 0;
+    private int numofUnDone = 0;
 
     private int viewStatus;
     private int deptIndex;
@@ -35,6 +37,7 @@ public class PDDataSourceService extends Service {
     private PDItem[] pdItemSNQueryResult;
 
     private PDQueryBinder cur = new PDQueryBinder();
+
 
     private SharedHelper helper;
     @Override
@@ -98,6 +101,18 @@ public class PDDataSourceService extends Service {
                 dto.setPurchaseTimeEnd(new Date(longValue));
         }
         query();
+    }
+
+    public int getNumofAll() {
+        return numofAll;
+    }
+
+    public int getNumofDone() {
+        return numofDone;
+    }
+
+    public int getNumofUnDone() {
+        return numofUnDone;
     }
 
     public String getExcelName() {
@@ -212,6 +227,12 @@ public class PDDataSourceService extends Service {
         if(deptIndex>0) {
             deptString = deptIndexMap.get(deptIndex);
         }
+        numofAll = dao.countAllFilteredPDItems(dto.getSn(), dto.getType(), dto.getMark(), dto.getUser(), dto.getLocate(), dto.getPurchaseTimeStart(), dto.getPurchaseTimeEnd(), deptString);
+
+        numofDone = dao.countDoneFilteredPDItems(dto.getSn(), dto.getType(), dto.getMark(), dto.getUser(), dto.getLocate(), dto.getPurchaseTimeStart(), dto.getPurchaseTimeEnd(), deptString);
+
+        numofUnDone = dao.countUndoneFilteredPDItems(dto.getSn(), dto.getType(), dto.getMark(), dto.getUser(), dto.getLocate(), dto.getPurchaseTimeStart(), dto.getPurchaseTimeEnd(), deptString);
+
         if(viewStatus == 0 ) {
             pdData = dao.loadAllFilteredPDItems(dto.getSn(), dto.getType(), dto.getMark(), dto.getUser(), dto.getLocate(), dto.getPurchaseTimeStart(), dto.getPurchaseTimeEnd(), deptString);
         } else if(viewStatus == 1) {
@@ -226,6 +247,14 @@ public class PDDataSourceService extends Service {
         new Thread(new Runnable() {
             public void run() {
                 dao.updatePDItem(pdItem);
+                if (pdItem.getConflictLog()!=null&&pdItem.getConflictLog().length()>0){
+                    String str = pdItem.getSn();
+                    PDLog pdLog = new PDLog();
+                    pdLog.setScanDate(new Date(System.currentTimeMillis()));
+                    pdLog.setSn(str);
+                    pdLog.setConflictLog(pdItem.getConflictLog());
+                    dao.insertPDLog(pdLog);
+                }
                 execQuery();
                 refreshData();
 
@@ -256,6 +285,8 @@ public class PDDataSourceService extends Service {
                 for(PDItem i:list) {
                     dao.insertPDItem(i);
                 }
+                PDLog[] oldData2 = dao.getAllPDLog();
+                dao.deletePDLog(oldData2);
                 PDItem[] newList = dao.loadPDItems();
                 deptIndexMap.clear();
                 deptIndexMap.put(0,"全部");
@@ -274,11 +305,29 @@ public class PDDataSourceService extends Service {
         }).start();
     }
 
+    private void insertPDLog(final PDLog pdLog) {
+        new Thread(new Runnable() {
+            public void run() {
+                dao.insertPDLog(pdLog);
+
+            }
+        }).start();
+    }
+
 
     public void queryBySN(final String sn) {
         new Thread(new Runnable() {
             public void run() {
                 pdItemSNQueryResult = dao.findPDItem(sn);
+                if (pdItemSNQueryResult == null||pdItemSNQueryResult.length==0){
+                    String str=sn;
+                    PDLog pdLog = new PDLog();
+                    pdLog.setScanDate(new Date(System.currentTimeMillis()));
+                    pdLog.setSn(str);
+                    pdLog.setConflictLog(getString(R.string.pdlog_notfound));
+                    dao.insertPDLog(pdLog);
+
+                }
                 Intent intent = new Intent("com.nfschina.pdScan.PDDataSourceService_PDItemUpdate");
                 sendBroadcast(intent);
             }
@@ -382,6 +431,27 @@ public class PDDataSourceService extends Service {
         }
 
         public void updateConflictLog(PDItem pdItem){updatePDItemConflictLog(pdItem);}
+
+        public void insertPDLog(PDLog pdLog){PDDataSourceService.this.insertPDLog(pdLog);}
+
+        public PDLog[] getPdLogsForExport(){
+            return dao.getAllPDLog();
+        }
+        public PDItem[] getPdItemsForExport(){
+            return dao.loadDonePDItems();
+        }
+
+        public int getNumofAll() {
+            return numofAll;
+        }
+
+        public int getNumofDone() {
+            return numofDone;
+        }
+
+        public int getNumofUnDone() {
+            return numofUnDone;
+        }
     }
 
 
