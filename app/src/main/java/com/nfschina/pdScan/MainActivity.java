@@ -418,10 +418,10 @@ public class MainActivity extends AppCompatActivity {
                             new Thread(new Runnable() {
                                 public void run() {
                                     String filecontentText = "";
-                                    filecontentText+="序号,扫码日期,资产编号,异常备注信息\r\n";
+                                    filecontentText+="序号, 扫码日期, 资产编号, 异常备注信息\r\n";
                                     PDLog[] allPDLogs= binder.getPdLogsForExport();
                                     for (int index = 0; index < allPDLogs.length; index++) {
-                                        filecontentText += index +1+ "," + allPDLogs[index].getScanDate().toString() + "," + allPDLogs[index].getSn() + "," + allPDLogs[index].getConflictLog()  + "\r\n";
+                                        filecontentText += index +1+ ", " + allPDLogs[index].getScanDate().toString() + ", " + allPDLogs[index].getSn() + ", " + allPDLogs[index].getConflictLog()  + "\r\n";
                                     }
 
                                     try {
