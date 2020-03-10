@@ -19,6 +19,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.IBinder;
@@ -314,6 +315,11 @@ public class MainActivity extends AppCompatActivity {
         File folder = new File(Environment.getExternalStorageDirectory(), qoneFolderN);
         if(!folder.exists()){
             folder.mkdir();
+            Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+            File file = folder;
+            Uri uri = Uri.fromFile(file);
+            intent.setData(uri);
+            mContext.sendBroadcast(intent);
         }
 
         File file = new File(Environment.getExternalStorageDirectory(), filename);
@@ -325,10 +331,12 @@ public class MainActivity extends AppCompatActivity {
         FileOutputStream outStream = new FileOutputStream(file);
         OutputStreamWriter osw = new OutputStreamWriter(outStream, "unicode");
         BufferedWriter bw = new BufferedWriter(osw);
-
-
         bw.write(content);
         bw.close();
+        Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+        Uri uri = Uri.fromFile(file);
+        intent.setData(uri);
+        mContext.sendBroadcast(intent);
     }
 
     private void expotResult() {
