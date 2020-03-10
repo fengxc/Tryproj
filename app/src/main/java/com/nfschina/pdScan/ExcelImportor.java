@@ -125,7 +125,8 @@ public class ExcelImportor {
                 }
 
             }
-            r.add(pd);
+            if(!"报废".equals(pd.getEqStateString()))
+                r.add(pd);
         }
         return r;
     }
