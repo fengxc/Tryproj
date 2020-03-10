@@ -40,8 +40,10 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.tabs.TabLayout;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -321,10 +323,12 @@ public class MainActivity extends AppCompatActivity {
 //            file = new File(File.separator + "mnt" + File.separator + "sdcard" + sdpath + File.separator, filename);
 //        }
         FileOutputStream outStream = new FileOutputStream(file);
+        OutputStreamWriter osw = new OutputStreamWriter(outStream, "unicode");
+        BufferedWriter bw = new BufferedWriter(osw);
 
 
-        outStream.write(content.getBytes());
-        outStream.close();
+        bw.write(content);
+        bw.close();
     }
 
     private void expotResult() {
