@@ -10,6 +10,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashMap;
@@ -86,17 +88,35 @@ public class ExcelImportor {
                     String methodStr = "set"+dateFieldName.toUpperCase().substring(0, 1)+dateFieldName.substring(1);
 
                     if (row.getCell(cindex)!=null){
-                        if(row.getCell(cindex).toString().length()>0){
-                            Date arg = row.getCell(cindex).getDateCellValue();
+                        if(row.getCell(cindex).toString()!=null&&row.getCell(cindex).toString().length()>0){
                             try {
-                                Method method1 = pd.getClass().getMethod(methodStr, new Class[] { java.sql.Date.class });
-                                method1.invoke(pd,new java.sql.Date(arg.getTime()));
-                            } catch (NoSuchMethodException e) {
+                                Date arg = row.getCell(cindex).getDateCellValue();
+
+                                try {
+                                    Method method1 = pd.getClass().getMethod(methodStr, new Class[]{java.sql.Date.class});
+                                    method1.invoke(pd, new java.sql.Date(arg.getTime()));
+                                } catch (NoSuchMethodException e) {
+                                    e.printStackTrace();
+                                } catch (IllegalAccessException e) {
+                                    e.printStackTrace();
+                                } catch (InvocationTargetException e) {
+                                    e.printStackTrace();
+                                }
+                            }catch (Exception e){
                                 e.printStackTrace();
-                            } catch (IllegalAccessException e) {
-                                e.printStackTrace();
-                            } catch (InvocationTargetException e) {
-                                e.printStackTrace();
+                                String argStr = row.getCell(cindex).getStringCellValue();
+                                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                                try{
+                                    Date s = sdf.parse(argStr);
+                                    Method method1 = pd.getClass().getMethod(methodStr, new Class[]{java.sql.Date.class});
+                                    method1.invoke(pd, new java.sql.Date(s.getTime()));
+                                } catch (ParseException | NoSuchMethodException ex) {
+                                    ex.printStackTrace();
+                                } catch (IllegalAccessException ex) {
+
+                                } catch (InvocationTargetException ex) {
+                                    ex.printStackTrace();
+                                }
                             }
                         }else{
 
