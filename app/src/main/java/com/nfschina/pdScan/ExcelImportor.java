@@ -125,6 +125,7 @@ public class ExcelImportor {
                 }
 
             }
+            pd.setSn(pd.getSn().toUpperCase());
             if(!"报废".equals(pd.getEqStateString()))
                 r.add(pd);
         }
