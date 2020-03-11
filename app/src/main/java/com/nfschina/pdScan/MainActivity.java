@@ -45,6 +45,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -109,7 +110,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             //parent 代表listView View 代表 被点击的列表项 position 代表第几个 id 代表列表编号
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Toast.makeText(MainActivity.this, mData.get(position).getSn(), Toast.LENGTH_LONG).show();
+//                Toast.makeText(MainActivity.this, mData.get(position).getSn(), Toast.LENGTH_LONG).show();
                 Intent i2 = new Intent(MainActivity.this, PDItemInfoActivity.class);
                 Bundle bundle = new Bundle();
                 bundle.putSerializable("mData", mData.get(position));
@@ -137,7 +138,7 @@ public class MainActivity extends AppCompatActivity {
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                Toast.makeText(getApplicationContext(), item.getOrder()+"", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(getApplicationContext(), item.getOrder()+"", Toast.LENGTH_SHORT).show();
                 binder.changeDept(item.getOrder());
                 updateUIStatus();
                 String deptName = (String) binder.getMap().get(item.getOrder());
@@ -164,7 +165,7 @@ public class MainActivity extends AppCompatActivity {
         tabs.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
-                Toast.makeText(getApplicationContext(), tab.getPosition()+"", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getApplicationContext(), tab.getPosition()+"", Toast.LENGTH_SHORT).show();
                 binder.changeStatus(tab.getPosition());
                 updateUIStatus();
             }
@@ -278,8 +279,8 @@ public class MainActivity extends AppCompatActivity {
         switch (requestCode) {
             case 1: // 确定数据来源 SCAN
                 if (resultCode == RESULT_OK) {
-                    String returnData = data.getStringExtra("scanResult");
-                    Toast.makeText(getApplicationContext(), returnData, Toast.LENGTH_SHORT).show();
+                    String returnData = data.getStringExtra("scanResult");    
+//                    Toast.makeText(getApplicationContext(), returnData, Toast.LENGTH_SHORT).show();
                     String[] result = returnData.split(sep);
                     for (String s : result) {
                         binder.checkPDItem(s);
@@ -329,10 +330,8 @@ public class MainActivity extends AppCompatActivity {
 //            file = new File(File.separator + "mnt" + File.separator + "sdcard" + sdpath + File.separator, filename);
 //        }
         FileOutputStream outStream = new FileOutputStream(file);
-        OutputStreamWriter osw = new OutputStreamWriter(outStream, "unicode");
-        BufferedWriter bw = new BufferedWriter(osw);
-        bw.write(content);
-        bw.close();
+        outStream.write(content.getBytes("GBK"));
+        outStream.close();
         Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
         Uri uri = Uri.fromFile(file);
         intent.setData(uri);
@@ -418,10 +417,10 @@ public class MainActivity extends AppCompatActivity {
                             new Thread(new Runnable() {
                                 public void run() {
                                     String filecontentText = "";
-                                    filecontentText+="序号, 扫码日期, 资产编号, 异常备注信息\r\n";
+                                    filecontentText+="序号,盘点日期时间,资产编号,异常备注信息\r\n";
                                     PDLog[] allPDLogs= binder.getPdLogsForExport();
                                     for (int index = 0; index < allPDLogs.length; index++) {
-                                        filecontentText += index +1+ ", " + allPDLogs[index].getScanDate().toString() + ", " + allPDLogs[index].getSn() + ", " + allPDLogs[index].getConflictLog()  + "\r\n";
+                                        filecontentText += index +1+ "," + new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(allPDLogs[index].getScanDate())+ "," + allPDLogs[index].getSn() + "," + allPDLogs[index].getConflictLog()  + "\r\n";
                                     }
 
                                     try {

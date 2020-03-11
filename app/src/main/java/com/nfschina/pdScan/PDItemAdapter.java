@@ -51,7 +51,7 @@ public class PDItemAdapter extends BaseAdapter {
         TextView txt_pdPrincipalString = (TextView) convertView.findViewById(R.id.itemPrincipalString);
         txt_pdSn.setText(itemList.get(position).getSn());
         txt_pdMark.setText(itemList.get(position).getMarkString());
-        txt_pdPrincipalString.setText(itemList.get(position).getPrincipalString());
+        txt_pdPrincipalString.setText(itemList.get(position).getUserString());
 
         return convertView;
     }

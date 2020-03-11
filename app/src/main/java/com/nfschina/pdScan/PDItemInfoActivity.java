@@ -56,8 +56,8 @@ public class PDItemInfoActivity extends AppCompatActivity implements PditemInfoF
 
     @Override
     public void updatePDItem(PDItem cuerrentPDItem) {
-        Toast.makeText(this,
-                cuerrentPDItem.getConflictLog().trim(),Toast.LENGTH_SHORT).show();
+//        Toast.makeText(this,
+//                cuerrentPDItem.getConflictLog().trim(),Toast.LENGTH_SHORT).show();
         binder.updateConflictLog(cuerrentPDItem);
     }
 
