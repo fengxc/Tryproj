@@ -41,8 +41,10 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.tabs.TabLayout;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -327,10 +329,10 @@ public class MainActivity extends AppCompatActivity {
 //            file = new File(File.separator + "mnt" + File.separator + "sdcard" + sdpath + File.separator, filename);
 //        }
         FileOutputStream outStream = new FileOutputStream(file);
-
-
-        outStream.write(content.getBytes());
-        outStream.close();
+        OutputStreamWriter osw = new OutputStreamWriter(outStream, "unicode");
+        BufferedWriter bw = new BufferedWriter(osw);
+        bw.write(content);
+        bw.close();
         Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
         Uri uri = Uri.fromFile(file);
         intent.setData(uri);
@@ -416,9 +418,10 @@ public class MainActivity extends AppCompatActivity {
                             new Thread(new Runnable() {
                                 public void run() {
                                     String filecontentText = "";
+                                    filecontentText+="序号, 扫码日期, 资产编号, 异常备注信息\r\n";
                                     PDLog[] allPDLogs= binder.getPdLogsForExport();
                                     for (int index = 0; index < allPDLogs.length; index++) {
-                                        filecontentText += index +1+ "," + allPDLogs[index].getScanDate().toString() + "," + allPDLogs[index].getSn() + "," + allPDLogs[index].getConflictLog()  + "\r\n";
+                                        filecontentText += index +1+ ", " + allPDLogs[index].getScanDate().toString() + ", " + allPDLogs[index].getSn() + ", " + allPDLogs[index].getConflictLog()  + "\r\n";
                                     }
 
                                     try {
