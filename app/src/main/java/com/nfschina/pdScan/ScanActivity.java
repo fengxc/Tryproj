@@ -14,6 +14,9 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.text.Editable;
@@ -56,7 +59,14 @@ public class ScanActivity extends AppCompatActivity  implements PditemInfoFragme
                     }
                     getSupportFragmentManager().beginTransaction().replace(R.id.scanLayout, pditemInfoFragment).commit();
                     binder.checkPDItem(result[0].getSn());
-                    result[0].setStatus(true);
+                    if(result[0].isStatus()){
+                        Toast.makeText(ScanActivity.this,"该资产"+result[0].getSn()+"已盘点过",Toast.LENGTH_LONG).show();
+                        Uri notifyUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+                        Ringtone mRingtone = RingtoneManager.getRingtone(ScanActivity.this, notifyUri);
+                        mRingtone.play();
+                    }else {
+                        result[0].setStatus(true);
+                    }
                     String conflictLog = "";
                     if(binder.getDeptIndex()>0) {
                         if(binder.getMap().get(binder.getDeptIndex()).toString().equals(result[0].getDeptString())){

@@ -279,7 +279,7 @@ public class MainActivity extends AppCompatActivity {
         switch (requestCode) {
             case 1: // 确定数据来源 SCAN
                 if (resultCode == RESULT_OK) {
-                    String returnData = data.getStringExtra("scanResult");    
+                    String returnData = data.getStringExtra("scanResult");
 //                    Toast.makeText(getApplicationContext(), returnData, Toast.LENGTH_SHORT).show();
                     String[] result = returnData.split(sep);
                     for (String s : result) {
