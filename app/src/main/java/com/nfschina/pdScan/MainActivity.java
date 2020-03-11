@@ -417,10 +417,10 @@ public class MainActivity extends AppCompatActivity {
                             new Thread(new Runnable() {
                                 public void run() {
                                     String filecontentText = "";
-                                    filecontentText+="序号,盘点日期时间,资产编号,异常备注信息\r\n";
+                                    filecontentText+="序号,盘点时间,资产编号,异常备注信息\r\n";
                                     PDLog[] allPDLogs= binder.getPdLogsForExport();
                                     for (int index = 0; index < allPDLogs.length; index++) {
-                                        filecontentText += index +1+ "," + new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(allPDLogs[index].getScanDate())+ "," + allPDLogs[index].getSn() + "," + allPDLogs[index].getConflictLog()  + "\r\n";
+                                        filecontentText += index +1+ "," + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(allPDLogs[index].getScanDate())+ "," + allPDLogs[index].getSn() + "," + allPDLogs[index].getConflictLog()  + "\r\n";
                                     }
 
                                     try {
