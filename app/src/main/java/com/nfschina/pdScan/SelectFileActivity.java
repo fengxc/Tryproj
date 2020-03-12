@@ -71,7 +71,7 @@ public class SelectFileActivity extends AppCompatActivity {
             bundle.putSerializable("mData", mData);
             bundle.putString("name", cfile.getName());
             Date lastModified = new Date(cfile.lastModified());
-            bundle.putString("date", new SimpleDateFormat("yyyy/MM/dd hh:mm:ss").format(lastModified));
+            bundle.putString("date", new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(lastModified));
             i.putExtras(bundle);
             setResult(RESULT_OK,i); //  向上一个活动返回数据
             finish();
