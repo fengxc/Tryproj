@@ -282,9 +282,7 @@ public class PDDataSourceService extends Service {
             public void run() {
                 PDItem[] oldData = dao.loadPDItems();
                 dao.deletePDItems(oldData);
-                for(PDItem i:list) {
-                    dao.insertPDItem(i);
-                }
+                dao.insertPDItems(list.toArray(new PDItem[1]));
                 PDLog[] oldData2 = dao.getAllPDLog();
                 dao.deletePDLog(oldData2);
                 PDItem[] newList = dao.loadPDItems();
