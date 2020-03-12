@@ -21,4 +21,10 @@ public class PDApplication extends Application {
         super.onCreate();
         mData=new ArrayList<>();
     }
+
+    @Override
+    public void onTerminate() {
+        super.onTerminate();
+        mData=null;
+    }
 }

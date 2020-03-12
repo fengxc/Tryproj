@@ -50,7 +50,7 @@ public class ExcelImportor {
 
     }
 
-    public ArrayList<PDItem> inportFromExcel(File cfile) throws IOException {
+    public ArrayList<PDItem> importFromExcel(File cfile) throws IOException {
         FileInputStream file = null;
         file = new FileInputStream(cfile);
         Workbook wb = new HSSFWorkbook(file);

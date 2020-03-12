@@ -15,6 +15,7 @@ import android.provider.OpenableColumns;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import java.io.File;
@@ -72,29 +73,49 @@ public class SelectFileActivity extends AppCompatActivity {
                 }
 //            Toast.makeText(SelectFileActivity.this, "时间"+sourceFile.lastModified()+"...", Toast.LENGTH_SHORT).show();
             }
-            String img_path = getFilePathForN(uri, context);
-            File cfile = new File(img_path);
-
-                ExcelImportor importor = new ExcelImportor();
-            try {
-                mData = importor.inportFromExcel(cfile);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-
-            //Toast.makeText(SelectFileActivity.this, "数据量"+mData.size()+"...", Toast.LENGTH_SHORT).show();
-            application.setmData(mData);
-            Intent i = new Intent(SelectFileActivity.this, MainActivity.class );
-            Bundle bundle = new Bundle();
-            bundle.putString("name", cfile.getName());
             Date lastModified = new Date();
             if (sourceFile!=null)
                 lastModified = new Date(sourceFile.lastModified());
-            bundle.putString("date", new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(lastModified));
-            i.putExtras(bundle);
-            setResult(RESULT_OK,i); //  向上一个活动返回数据
-            finish();
+            final Date rDate = lastModified;
+            String img_path = getFilePathForN(uri, context);
+            final File cfile = new File(img_path);
+
+            final ExcelImportor importor = new ExcelImportor();
+            final ProgressBar progressBar = findViewById(R.id.progressBar);
+            progressBar.setVisibility(View.VISIBLE);
+            final Thread finishThread = new Thread(new Runnable() {
+                public void run() {
+
+                    //Toast.makeText(SelectFileActivity.this, "数据量"+mData.size()+"...", Toast.LENGTH_SHORT).show();
+                    application.setmData(mData);
+
+                    Intent i = new Intent(SelectFileActivity.this, MainActivity.class );
+                    Bundle bundle = new Bundle();
+                    bundle.putString("name", cfile.getName());
+
+                    bundle.putString("date", new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(rDate));
+                    i.putExtras(bundle);
+                    setResult(RESULT_OK,i); //  向上一个活动返回数据
+                    finish();
+
+
+                }
+            });
+
+            new Thread(new Runnable() {
+                public void run() {
+
+                    try {
+                        mData = importor.importFromExcel(cfile);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    //progressBar.setVisibility(View.INVISIBLE);
+                    finishThread.start();
+                }
+            }).start();
+
+
 
 
         }
