@@ -7,7 +7,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.DocumentsContract;
 import android.provider.OpenableColumns;
 import android.util.Log;
 import android.view.View;
@@ -53,6 +56,18 @@ public class SelectFileActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == Activity.RESULT_OK) {//是否选择，没选择就不会继续
             Uri uri = data.getData();//得到uri，后面就是将uri转化成file的过程。
+            File sourceFile = null;
+            String docId = null;
+            if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                docId = DocumentsContract.getDocumentId(uri);
+
+                String[] split = docId.split(":");
+                String type = split[0];
+                if ("primary".equalsIgnoreCase(type)) {
+                    sourceFile = new File(Environment.getExternalStorageDirectory() + "/" + split[1]);
+                }
+//            Toast.makeText(SelectFileActivity.this, "时间"+sourceFile.lastModified()+"...", Toast.LENGTH_SHORT).show();
+            }
             String img_path = getFilePathForN(uri, context);
             File cfile = new File(img_path);
 
@@ -70,7 +85,9 @@ public class SelectFileActivity extends AppCompatActivity {
             Bundle bundle = new Bundle();
             bundle.putSerializable("mData", mData);
             bundle.putString("name", cfile.getName());
-            Date lastModified = new Date(cfile.lastModified());
+            Date lastModified = new Date();
+            if (sourceFile!=null)
+                lastModified = new Date(sourceFile.lastModified());
             bundle.putString("date", new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(lastModified));
             i.putExtras(bundle);
             setResult(RESULT_OK,i); //  向上一个活动返回数据
