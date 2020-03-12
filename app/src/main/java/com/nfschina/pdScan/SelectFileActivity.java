@@ -29,9 +29,13 @@ public class SelectFileActivity extends AppCompatActivity {
     Button buttonSelectFile;
     private Context context;
     private ArrayList<PDItem> mData;
+    private PDApplication application;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        application = (PDApplication) getApplication();
+
         context = SelectFileActivity.this;
         setContentView(R.layout.activity_select_file);
         buttonSelectFile = findViewById(R.id.buttonselectfile);
@@ -80,10 +84,9 @@ public class SelectFileActivity extends AppCompatActivity {
 
 
             //Toast.makeText(SelectFileActivity.this, "数据量"+mData.size()+"...", Toast.LENGTH_SHORT).show();
-
+            application.setmData(mData);
             Intent i = new Intent(SelectFileActivity.this, MainActivity.class );
             Bundle bundle = new Bundle();
-            bundle.putSerializable("mData", mData);
             bundle.putString("name", cfile.getName());
             Date lastModified = new Date();
             if (sourceFile!=null)

@@ -52,6 +52,7 @@ import java.util.List;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
+    PDApplication application;
     DrawerLayout drawerLayout;
     private List<PDItem> mData = null;
     private Context mContext;
@@ -91,6 +92,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        application = (PDApplication) getApplication();
         setContentView(R.layout.activity_main);
         mContext = MainActivity.this;
         drawerLayout = findViewById(R.id.drawerlayout);
@@ -295,7 +297,7 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case 3://导入
                 if (resultCode == RESULT_OK) {
-                    ArrayList<PDItem> newData = (ArrayList<PDItem>) data.getSerializableExtra("mData");
+                    ArrayList<PDItem> newData = application.getmData();
                     String name =data.getStringExtra("name");
                     String date =data.getStringExtra("date");
                     binder.importPDList(newData,name,date);

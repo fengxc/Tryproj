@@ -1,5 +1,7 @@
 package com.nfschina.pdScan;
 
+import android.util.Log;
+
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -60,66 +62,79 @@ public class ExcelImportor {
         for (int index=1;index<=num;index++){
             PDItem pd = new PDItem();
             Row row = sheet.getRow(index);
+            if (row==null)
+                continue;
             for(int cindex =0;cindex<row.getLastCellNum();cindex++){
-                String columnName = rowName.getCell(cindex).getStringCellValue();
-                String fieldName = fieldMap.get(columnName);
-                String dateFieldName = dateFieldMap.get(columnName);
-                if(fieldName!=null){
-                    String methodStr = "set"+fieldName.toUpperCase().substring(0, 1)+fieldName.substring(1);
+                if(rowName.getCell(cindex)!=null){
 
-                    if (row.getCell(cindex)!=null){
-                        if(row.getCell(cindex).toString().length()>0){
-                            String arg = row.getCell(cindex).toString();
+                    String columnName = rowName.getCell(cindex).getStringCellValue();
+                    String fieldName = fieldMap.get(columnName);
+                    String dateFieldName = dateFieldMap.get(columnName);
+                    if(fieldName!=null){
+                        String methodStr = "set"+fieldName.toUpperCase().substring(0, 1)+fieldName.substring(1);
+
+                        if (row.getCell(cindex)!=null){
                             try {
-                                Method method1 = pd.getClass().getMethod(methodStr, new Class[] { String.class });
-                                method1.invoke(pd,arg);
-                            } catch (NoSuchMethodException e) {
-                                e.printStackTrace();
-                            } catch (IllegalAccessException e) {
-                                e.printStackTrace();
-                            } catch (InvocationTargetException e) {
-                                e.printStackTrace();
-                            }
-                        }else{
+                                if (row.getCell(cindex).toString().length() > 0) {
+                                    String arg = row.getCell(cindex).toString();
+                                    try {
+                                        Method method1 = pd.getClass().getMethod(methodStr, new Class[]{String.class});
+                                        method1.invoke(pd, arg);
+                                    } catch (NoSuchMethodException e) {
+                                        e.printStackTrace();
+                                    } catch (IllegalAccessException e) {
+                                        e.printStackTrace();
+                                    } catch (InvocationTargetException e) {
+                                        e.printStackTrace();
+                                    }
+                                } else {
 
-                        }
-                    }
-                }else if(dateFieldName!=null){
-                    String methodStr = "set"+dateFieldName.toUpperCase().substring(0, 1)+dateFieldName.substring(1);
-
-                    if (row.getCell(cindex)!=null){
-                        if(row.getCell(cindex).toString()!=null&&row.getCell(cindex).toString().length()>0){
-                            try {
-                                Date arg = row.getCell(cindex).getDateCellValue();
-
-                                try {
-                                    Method method1 = pd.getClass().getMethod(methodStr, new Class[]{java.sql.Date.class});
-                                    method1.invoke(pd, new java.sql.Date(arg.getTime()));
-                                } catch (NoSuchMethodException e) {
-                                    e.printStackTrace();
-                                } catch (IllegalAccessException e) {
-                                    e.printStackTrace();
-                                } catch (InvocationTargetException e) {
-                                    e.printStackTrace();
                                 }
                             }catch (Exception e){
+                                Log.i("Exce","row:"+index+"column:"+cindex);
                                 e.printStackTrace();
-                                String argStr = row.getCell(cindex).getStringCellValue();
-                                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-                                try{
-                                    Date s = sdf.parse(argStr);
-                                    Method method1 = pd.getClass().getMethod(methodStr, new Class[]{java.sql.Date.class});
-                                    method1.invoke(pd, new java.sql.Date(s.getTime()));
-                                } catch (ParseException | NoSuchMethodException ex) {
-                                    ex.printStackTrace();
-                                } catch (IllegalAccessException ex) {
 
-                                } catch (InvocationTargetException ex) {
-                                    ex.printStackTrace();
-                                }
                             }
-                        }else{
+                        }
+                    }else if(dateFieldName!=null){
+                        String methodStr = "set"+dateFieldName.toUpperCase().substring(0, 1)+dateFieldName.substring(1);
 
+                        if (row.getCell(cindex)!=null){
+                            if(row.getCell(cindex).toString()!=null&&row.getCell(cindex).toString().length()>0){
+                                try {
+                                    Date arg = row.getCell(cindex).getDateCellValue();
+
+                                    try {
+                                        Method method1 = pd.getClass().getMethod(methodStr, new Class[]{java.sql.Date.class});
+                                        method1.invoke(pd, new java.sql.Date(arg.getTime()));
+                                    } catch (NoSuchMethodException e) {
+                                        e.printStackTrace();
+                                    } catch (IllegalAccessException e) {
+                                        e.printStackTrace();
+                                    } catch (InvocationTargetException e) {
+                                        e.printStackTrace();
+                                    }
+                                }catch (Exception e){
+                                    //e.printStackTrace();
+                                    //Log.i("Exce","row:"+index+"column:"+cindex);
+                                    String argStr = row.getCell(cindex).getStringCellValue();
+                                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                                    try{
+                                        Date s = sdf.parse(argStr);
+                                        Method method1 = pd.getClass().getMethod(methodStr, new Class[]{java.sql.Date.class});
+                                        method1.invoke(pd, new java.sql.Date(s.getTime()));
+                                    } catch (ParseException | NoSuchMethodException ex) {
+                                        Log.i("Exce","row:"+index+"column:"+cindex);
+                                        ex.printStackTrace();
+                                    } catch (IllegalAccessException ex) {
+
+                                    } catch (InvocationTargetException ex) {
+                                        ex.printStackTrace();
+                                    }
+                                }
+                            }else{
+
+                            }
                         }
                     }
                 }
