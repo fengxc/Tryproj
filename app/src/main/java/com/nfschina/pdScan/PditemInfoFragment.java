@@ -53,7 +53,8 @@ public class PditemInfoFragment extends Fragment {
             TextView mark = getView().findViewById(R.id.infoMarkContent);
             mark.setText(cuerrentPDItem.getMarkString());
             TextView purchaseTime = getView().findViewById(R.id.infoPurchaseTimeContent);
-            purchaseTime.setText(new SimpleDateFormat("yyyy-MM-dd").format(cuerrentPDItem.getPurchaseTime()));
+            if (cuerrentPDItem.getPurchaseTime()!=null)
+                purchaseTime.setText(new SimpleDateFormat("yyyy-MM-dd").format(cuerrentPDItem.getPurchaseTime()));
             TextView dept = getView().findViewById(R.id.infoDeptContent);
             dept.setText(cuerrentPDItem.getDeptString());
             TextView user = getView().findViewById(R.id.infoUserContent);
