@@ -250,9 +250,11 @@ public class MainActivity extends AppCompatActivity {
         list_pdItem.setAdapter(mAdapter);
         navigationView.getMenu().clear();
         TextView head = findViewById(R.id.headtitle);
-        head.setText(binder.getExcelName());
+        if(head!=null)
+            head.setText(binder.getExcelName());
         TextView sub = findViewById(R.id.headsubtitle);
-        sub.setText(binder.getExcelDate());
+        if(sub!=null)
+            sub.setText(binder.getExcelDate());
         Map map = binder.getMap();
         Iterator entries = map.entrySet().iterator();
         while (entries.hasNext()) {

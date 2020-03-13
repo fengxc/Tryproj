@@ -74,6 +74,10 @@ public class ScanActivity extends AppCompatActivity  implements PditemInfoFragme
                         }else{
                             conflictLog = "盘点范围为"+binder.getMap().get(binder.getDeptIndex()).toString()
                                     +"，资产所属部门为"+result[0].getDeptString()+"，两者不一致";
+                            Toast.makeText(ScanActivity.this,conflictLog,Toast.LENGTH_LONG).show();
+                            Uri notifyUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+                            Ringtone mRingtone = RingtoneManager.getRingtone(ScanActivity.this, notifyUri);
+                            mRingtone.play();
                         }
                         result[0].setConflictLog(conflictLog);
 
