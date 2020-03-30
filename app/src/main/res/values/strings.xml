@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">盘点系统</string>
+    <string name="app_name">资产盘点</string>
     <string name="title_activity_filter">查询条件</string>
 
     <!-- Preference Titles -->
