@@ -155,15 +155,12 @@ public class ScanActivity extends AppCompatActivity  implements PditemInfoFragme
                         str=str.split(":")[1];
                         binder.queryPdItemBySN(str);
                     }else{
-                        NoDataFragment noDataFragment = new NoDataFragment();
-                        getSupportFragmentManager().beginTransaction().replace(R.id.scanLayout, noDataFragment).commit();
-
+                        if(pditemInfoFragment==null) {
+                            pditemInfoFragment = new PditemInfoFragment();
+                        }
+                        getSupportFragmentManager().beginTransaction().replace(R.id.scanLayout, pditemInfoFragment).commit();
                         str=str.substring(0,str.length()-1);
-                        PDLog pdLog = new PDLog();
-                        pdLog.setScanDate(new Date(System.currentTimeMillis()));
-                        pdLog.setSn(str);
-                        pdLog.setConflictLog(getString(R.string.pdlog_notfound));
-                        binder.insertPDLog(pdLog);
+                        binder.queryPdItemBySN(str);
                     }
 
                     editText.setText("");

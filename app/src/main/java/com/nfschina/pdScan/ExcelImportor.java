@@ -141,8 +141,15 @@ public class ExcelImportor {
 
             }
             pd.setSn(pd.getSn().toUpperCase());
-            if(!"报废".equals(pd.getEqStateString())&&pd.getSn()!=null&&pd.getSn().length()>0 )
-                r.add(pd);
+            if(!"报废".equals(pd.getEqStateString())&&pd.getSn()!=null&&pd.getSn().length()>0 ) {
+                boolean isIn = false;
+                for (PDItem pdR:r ) {
+                    if(pdR.getSn().equals(pd.getSn()))
+                        isIn = true;
+                }
+                if(!isIn)
+                    r.add(pd);
+            }
         }
         return r;
     }
